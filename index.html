@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>binary 64-bit floating-point machine</title>
+    <meta name="description"
+        content="ieee 754 double-precision 64-bit floating-point converter, rounding demonstrator, and arithmetic simulator with grs method.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <header class="header">
+            <span class="badge-tag">csarch2 case study 1</span>
+            <h1>machine 3: binary 64-bit floating-point machine</h1>
+            <p>ieee 754 double-precision converter, rounding demonstrator, and grs arithmetic simulator</p>
+        </header>
+
+        <nav class="tab-navigation" role="tablist">
+            <button class="tab-btn active" data-tab="tab-converter" id="tab-btn-converter" role="tab"
+                aria-selected="true">
+                1. ieee 754 converter
+            </button>
+            <button class="tab-btn" data-tab="tab-rounding" id="tab-btn-rounding" role="tab" aria-selected="false">
+                2. rounding methods
+            </button>
+            <button class="tab-btn" data-tab="tab-arithmetic" id="tab-btn-arithmetic" role="tab" aria-selected="false">
+                3. grs arithmetic
+            </button>
+        </nav>
+
+        <!-- TAB 1: CONVERTER -->
+        <section id="tab-converter" class="tab-content active" role="tabpanel">
+            <div class="card">
+                <h2 class="card-title">convert decimal to ieee 754 double-precision</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="converter-input">enter decimal number</label>
+                        <input type="text" id="converter-input" class="input-control"
+                            placeholder="e.g. 13.625, -0.1, 3.14159..." value="13.625">
+                        <div class="preset-buttons">
+                            <button class="btn-chip" onclick="setConverterPreset('0')">0</button>
+                            <button class="btn-chip" onclick="setConverterPreset('-0')">-0</button>
+                            <button class="btn-chip" onclick="setConverterPreset('1')">1.0</button>
+                            <button class="btn-chip" onclick="setConverterPreset('0.1')">0.1</button>
+                            <button class="btn-chip" onclick="setConverterPreset('Infinity')">+infinity</button>
+                            <button class="btn-chip" onclick="setConverterPreset('-Infinity')">-infinity</button>
+                            <button class="btn-chip" onclick="setConverterPreset('NaN')">nan</button>
+                            <button class="btn-chip"
+                                onclick="setConverterPreset('4.9406564584124654e-324')">denormalized</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-convert" class="btn-action">
+                    convert number
+                </button>
+            </div>
+
+            <div id="converter-results" class="card" style="display: none;">
+                <h3 class="card-title">ieee 754 representation</h3>
+
+                <div class="field-legend">
+                    <span class="legend-item"><span class="dot dot-sign"></span> sign bit (1 bit)</span>
+                    <span class="legend-item"><span class="dot dot-exp"></span> biased exponent (11 bits)</span>
+                    <span class="legend-item"><span class="dot dot-mant"></span> mantissa (52 bits)</span>
+                </div>
+
+                <div class="ieee-breakdown">
+                    <div class="metric-label">formatted 64-bit binary representation</div>
+                    <div id="binary-spaced-display" class="binary-display">
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">hexadecimal</div>
+                        <div id="metric-hex" class="metric-value">0x0000000000000000</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">type / category</div>
+                        <div id="metric-type" class="metric-value">normalized</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">sign character</div>
+                        <div id="metric-sign" class="metric-value">+ (0)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">biased exponent</div>
+                        <div id="metric-biased-exp" class="metric-value">1026</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">unbiased exponent (e)</div>
+                        <div id="metric-unbiased-exp" class="metric-value">3</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: ROUNDING -->
+        <section id="tab-rounding" class="tab-content" role="tabpanel">
+            <div class="card">
+                <h2 class="card-title">demonstrate rounding methods</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="rounding-mode-select">format type</label>
+                        <select id="rounding-mode-select" class="input-control">
+                            <option value="decimal" selected>decimal format</option>
+                            <option value="binary">binary format</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="rounding-input">input number</label>
+                        <input type="text" id="rounding-input" class="input-control" placeholder="e.g., 3.14159265..."
+                            value="3.1415926535">
+                    </div>
+                    <div class="form-group">
+                        <label for="rounding-digits">target digits / bits</label>
+                        <input type="number" id="rounding-digits" class="input-control" min="0" max="30" value="4">
+                    </div>
+                </div>
+
+                <button id="btn-round" class="btn-action">
+                    calculate all roundings
+                </button>
+            </div>
+
+            <div id="rounding-results" class="card" style="display: none;">
+                <h3 class="card-title">rounded results (four methods)</h3>
+
+                <div class="rounding-grid">
+                    <div class="rounding-card chopping">
+                        <div class="method-name">1. chopping (truncation)</div>
+                        <div class="method-desc">truncates all digits/bits past the target length toward zero.</div>
+                        <div id="res-chopping" class="method-result">-</div>
+                    </div>
+                    <div class="rounding-card round-up">
+                        <div class="method-name">2. round-up (ceiling)</div>
+                        <div class="method-desc">rounds toward positive infinity.</div>
+                        <div id="res-round-up" class="method-result">-</div>
+                    </div>
+                    <div class="rounding-card round-down">
+                        <div class="method-name">3. round-down (floor)</div>
+                        <div class="method-desc">rounds toward negative infinity.</div>
+                        <div id="res-round-down" class="method-result">-</div>
+                    </div>
+                    <div class="rounding-card rtne">
+                        <div class="method-name">4. round-to-nearest (ties to even)</div>
+                        <div class="method-desc">ieee default mode.</div>
+                        <div id="res-rtne" class="method-result">-</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: ARITHMETIC -->
+        <section id="tab-arithmetic" class="tab-content" role="tabpanel">
+            <div class="card">
+                <h2 class="card-title">arithmetic operations with grs method</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="op-input-type">input format</label>
+                        <select id="op-input-type" class="input-control">
+                            <option value="decimal" selected>decimal operands</option>
+                            <option value="hex">ieee 754 hexadecimal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="op-type">operation</label>
+                        <select id="op-type" class="input-control">
+                            <option value="add" selected>addition</option>
+                            <option value="multiply">multiplication</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="operand-a">operand a</label>
+                        <input type="text" id="operand-a" class="input-control"
+                            placeholder="e.g., 10.5 or 0x4025000000000000" value="10.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="operand-b">operand b</label>
+                        <input type="text" id="operand-b" class="input-control"
+                            placeholder="e.g., 2.25 or 0x4002000000000000" value="2.25">
+                    </div>
+                </div>
+
+                <button id="btn-arithmetic" class="btn-action">
+                    execute operation
+                </button>
+            </div>
+
+            <div id="arithmetic-results" class="card" style="display: none;">
+                <h3 class="card-title">final arithmetic result</h3>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">decimal result</div>
+                        <div id="arith-dec" class="metric-value">12.75</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">hexadecimal</div>
+                        <div id="arith-hex" class="metric-value">0x4029800000000000</div>
+                    </div>
+                </div>
+
+                <div class="field-legend" style="margin-top: 1.5rem;">
+                    <span class="legend-item"><span class="dot dot-sign"></span> binary representation</span>
+                </div>
+                <div id="arith-binary" class="binary-display">
+                </div>
+
+                <h3 class="card-title" style="margin-top: 2rem;">step-by-step grs solution</h3>
+
+                <div id="steps-accordion" class="steps-container">
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>csarch2 case study 1 : machine 3 binary 64-bit floating-point machine</p>
+            <p>built with vanilla javascript and modern css</p>
+        </footer>
+
+    </div>
+
+    <script src="js/ieee754.js"></script>
+    <script src="js/rounding.js"></script>
+    <script src="js/arithmetic.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
