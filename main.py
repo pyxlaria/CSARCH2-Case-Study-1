@@ -103,100 +103,145 @@ def round_decimal(num, digits):
 
     return chopped, rounded_up, rounded_down, rounded_to_nearest
 
+def truncate_bin(int_part, frac_part, len_bin, bits):
+    # truncate a signed binary floating point string to a certain number of bits
+    if len_bin <= bits:
+        return int_part, frac_part  # no truncation needed
+    elif len_bin > bits:
+        # determine how many bits to keep from integer and fractional parts
+        int_len = len(int_part)
+        frac_len = len(frac_part)
+        if int_len >= bits:
+            # keep only the integer part, truncate fractional part
+            return int_part[:bits], ''
+        else:
+            # keep all of integer part and some of fractional part
+            remaining_bits = bits - int_len
+            return int_part, frac_part[:remaining_bits]
+
+def round_up_bin(int_part, frac_part, len_bin, bits):
+    # round up a signed binary floating point string to a certain number of bits
+    if len_bin <= bits:
+        return int_part, frac_part  # no rounding needed
+    elif len_bin > bits:
+        # determine how many bits to keep from integer and fractional parts
+        int_len = len(int_part)
+        frac_len = len(frac_part)
+        if int_len >= bits:
+            # keep only the integer part, round up fractional part
+            return int_part[:bits], ''
+        else:
+            # keep all of integer part and some of fractional part
+            remaining_bits = bits - int_len
+            new_frac = frac_part[:remaining_bits]
+            if remaining_bits < frac_len and frac_part[remaining_bits] == '1':
+                # need to round up
+                new_frac = bin(int(new_frac, 2) + 1)[2:].zfill(remaining_bits)
+                if len(new_frac) > remaining_bits:
+                    # carry over to integer part
+                    new_int = bin(int(int_part, 2) + 1)[2:]
+                    return new_int, new_frac[1:]  # drop the leading '1' from fractional part
+            return int_part, new_frac
+
+def round_down_bin(int_part, frac_part, len_bin, bits):
+    # round down a signed binary floating point string to a certain number of bits
+    
+    if len_bin <= bits:
+        return int_part, frac_part  # no rounding needed
+    elif len_bin > bits:
+        # determine how many bits to keep from integer and fractional parts
+        int_len = len(int_part)
+        frac_len = len(frac_part)
+        if int_len >= bits:
+            # keep only the integer part, round down fractional part
+            return int_part[:bits], ''
+        else:
+            # keep all of integer part and some of fractional part
+            remaining_bits = bits - int_len
+            new_frac = frac_part[:remaining_bits]
+            return int_part, new_frac
+
+def round_to_nearest_bin(int_part, frac_part, len_bin, bits):
+    # round to nearest, ties to even for signed binary floating point string
+    if len_bin <= bits:
+        return int_part, frac_part  # no rounding needed
+    elif len_bin > bits:
+        # determine how many bits to keep from integer and fractional parts
+        int_len = len(int_part)
+        frac_len = len(frac_part)
+        if int_len >= bits:
+            # keep only the integer part, round fractional part to nearest
+            return int_part[:bits], ''
+        else:
+            # keep all of integer part and some of fractional part
+            remaining_bits = bits - int_len
+            new_frac = frac_part[:remaining_bits]
+            if remaining_bits < frac_len:
+                next_bit = frac_part[remaining_bits]
+                if next_bit == '1':
+                    # check for tie
+                    if remaining_bits + 1 < frac_len and frac_part[remaining_bits + 1] == '0':
+                        # tie, round to even
+                        if int(new_frac[-1]) % 2 != 0:
+                            new_frac = bin(int(new_frac, 2) + 1)[2:].zfill(remaining_bits)
+                    else:
+                        # round up
+                        new_frac = bin(int(new_frac, 2) + 1)[2:].zfill(remaining_bits)
+                    if len(new_frac) > remaining_bits:
+                        # carry over to integer part
+                        new_int = bin(int(int_part, 2) + 1)[2:]
+                        return new_int, new_frac[1:]  # drop the leading '1' from fractional part
+            return int_part, new_frac
+
 def round_binary(bin_str, bits):
-    if not isinstance(bin_str, str):
-        raise TypeError("bin_str must be a string")
-
-    bin_str = bin_str.strip()
-    if not bin_str:
-        raise ValueError("Binary input cannot be empty")
-
-    negative = bin_str.startswith('-')
-    if negative:
+    # rounding methods for signed binary floating point numbers
+    # check for negative sign
+    if bin_str[0] == '-': 
+        sign = '-'
         bin_str = bin_str[1:]
-    elif bin_str.startswith('+'):
-        bin_str = bin_str[1:]
+    # check for positive sign or no sign
+    elif bin_str[0] == '+' or bin_str[0] == '0' or bin_str[0] == '1':
+        sign = ''
+    # check for invalid input
+    else:
+        raise ValueError("Invalid binary input format")
 
-    if '.' not in bin_str:
-        bin_str = bin_str + '.0'
+    # determine the length of the binary string
+    if '.' in bin_str:
+        int_part, frac_part = bin_str.split('.')
+        len_bin = len(int_part) + len(frac_part)
+    else:
+        int_part = bin_str
+        frac_part = ''
+        len_bin = len(bin_str)
 
-    int_part, frac_part = bin_str.split('.', 1)
-    int_part = int_part or '0'
-    frac_part = frac_part or ''
+    # chopping
+    chopped_int, chopped_frac = truncate_bin(int_part, frac_part, len_bin, bits)
+    chopped_res = sign + chopped_int + ('.' + chopped_frac if chopped_frac else '')
 
-    if not set(int_part).issubset({'0', '1'}) or not set(frac_part).issubset({'0', '1'}):
-        raise ValueError("Input must be a binary floating-point number")
+    # round-up
+    if sign == '-':
+        # for negative numbers, round-up is actually round-down in magnitude
+        rounded_up_int, rounded_up_frac = round_down_bin(int_part, frac_part, len_bin, bits)
+    else:
+        rounded_up_int, rounded_up_frac = round_up_bin(int_part, frac_part, len_bin, bits)
 
-    if bits < 0:
-        raise ValueError("bits must be zero or a positive integer")
+    rounded_up_res = sign + rounded_up_int + ('.' + rounded_up_frac if rounded_up_frac else '')
 
-    def format_value(int_bits, frac_bits):
-        if bits == 0:
-            return ('-' if negative else '') + int_bits
-        return ('-' if negative else '') + int_bits + '.' + frac_bits
+    # round-down
+    if sign == '-':
+        # for negative numbers, round-down is actually round-up in magnitude
+        rounded_down_int, rounded_down_frac = round_up_bin(int_part, frac_part, len_bin, bits)
+    else:
+        rounded_down_int, rounded_down_frac = round_down_bin(int_part, frac_part, len_bin, bits)
+        
+    rounded_down_res = sign + rounded_down_int + ('.' + rounded_down_frac if rounded_down_frac else '')
 
-    def increment_fraction(int_bits, frac_bits):
-        if not frac_bits:
-            return str(int(int_bits, 2) + 1), ''
+    # round-to-nearest, ties-to-even
+    rounded_nearest_int, rounded_nearest_frac = round_to_nearest_bin(int_part, frac_part, len_bin, bits)
+    rounded_nearest_res = sign + rounded_nearest_int + ('.' + rounded_nearest_frac if rounded_nearest_frac else '')
 
-        frac_val = int(frac_bits, 2) + 1
-        if frac_val == (1 << len(frac_bits)):
-            return str(int(int_bits, 2) + 1), '0' * len(frac_bits)
-        return int_bits, format(frac_val, f'0{len(frac_bits)}b')
-
-    def round_fraction(mode, int_bits, frac_bits):
-        kept = frac_bits[:bits]
-        discarded = frac_bits[bits:]
-
-        if mode == 'trunc':
-            return int_bits, kept
-
-        if not discarded or all(ch == '0' for ch in discarded):
-            return int_bits, kept
-
-        if mode == 'up':
-            if negative:
-                return int_bits, kept
-            return increment_fraction(int_bits, kept)
-
-        if mode == 'down':
-            if negative:
-                return increment_fraction(int_bits, kept)
-            return int_bits, kept
-
-        if mode == 'nearest':
-            first_discard = discarded[0]
-            if first_discard == '0':
-                return int_bits, kept
-            if len(discarded) > 1 and any(ch == '1' for ch in discarded[1:]):
-                return increment_fraction(int_bits, kept)
-            if kept and kept[-1] == '1':
-                return increment_fraction(int_bits, kept)
-            return int_bits, kept
-
-        raise ValueError("Unknown rounding mode")
-
-    if bits == 0:
-        return (
-            ('-' if negative else '') + int_part,
-            ('-' if negative else '') + int_part,
-            ('-' if negative else '') + int_part,
-            ('-' if negative else '') + int_part,
-        )
-
-    int_bits, frac_bits = round_fraction('trunc', int_part, frac_part)
-    trunc_res = format_value(int_bits, frac_bits)
-
-    int_bits, frac_bits = round_fraction('up', int_part, frac_part)
-    up_res = format_value(int_bits, frac_bits)
-
-    int_bits, frac_bits = round_fraction('down', int_part, frac_part)
-    down_res = format_value(int_bits, frac_bits)
-
-    int_bits, frac_bits = round_fraction('nearest', int_part, frac_part)
-    nearest_res = format_value(int_bits, frac_bits)
-
-    return trunc_res, up_res, down_res, nearest_res
+    return chopped_res, rounded_up_res, rounded_down_res, rounded_nearest_res
 
 def main():
     choice = input("Choose a task:\n1. Decimal → IEEE 754 Double\n2. Rounding Methods\n3. Arithmetic (GRS Method)\nEnter 1, 2, or 3: ")
