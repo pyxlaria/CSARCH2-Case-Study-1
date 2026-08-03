@@ -134,7 +134,7 @@ def round_up_bin(int_part, frac_part, len_bin, bits):
             # keep all of integer part and some of fractional part
             remaining_bits = bits - int_len
             new_frac = frac_part[:remaining_bits]
-            if remaining_bits < frac_len and frac_part[remaining_bits] == '1':
+            if remaining_bits < frac_len and '1' in frac_part[remaining_bits:]:
                 # need to round up
                 new_frac = bin(int(new_frac, 2) + 1)[2:].zfill(remaining_bits)
                 if len(new_frac) > remaining_bits:
