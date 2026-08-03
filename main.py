@@ -104,8 +104,99 @@ def round_decimal(num, digits):
     return chopped, rounded_up, rounded_down, rounded_to_nearest
 
 def round_binary(bin_str, bits):
+    if not isinstance(bin_str, str):
+        raise TypeError("bin_str must be a string")
 
-    pass
+    bin_str = bin_str.strip()
+    if not bin_str:
+        raise ValueError("Binary input cannot be empty")
+
+    negative = bin_str.startswith('-')
+    if negative:
+        bin_str = bin_str[1:]
+    elif bin_str.startswith('+'):
+        bin_str = bin_str[1:]
+
+    if '.' not in bin_str:
+        bin_str = bin_str + '.0'
+
+    int_part, frac_part = bin_str.split('.', 1)
+    int_part = int_part or '0'
+    frac_part = frac_part or ''
+
+    if not set(int_part).issubset({'0', '1'}) or not set(frac_part).issubset({'0', '1'}):
+        raise ValueError("Input must be a binary floating-point number")
+
+    if bits < 0:
+        raise ValueError("bits must be zero or a positive integer")
+
+    def format_value(int_bits, frac_bits):
+        if bits == 0:
+            return ('-' if negative else '') + int_bits
+        return ('-' if negative else '') + int_bits + '.' + frac_bits
+
+    def increment_fraction(int_bits, frac_bits):
+        if not frac_bits:
+            return str(int(int_bits, 2) + 1), ''
+
+        frac_val = int(frac_bits, 2) + 1
+        if frac_val == (1 << len(frac_bits)):
+            return str(int(int_bits, 2) + 1), '0' * len(frac_bits)
+        return int_bits, format(frac_val, f'0{len(frac_bits)}b')
+
+    def round_fraction(mode, int_bits, frac_bits):
+        kept = frac_bits[:bits]
+        discarded = frac_bits[bits:]
+
+        if mode == 'trunc':
+            return int_bits, kept
+
+        if not discarded or all(ch == '0' for ch in discarded):
+            return int_bits, kept
+
+        if mode == 'up':
+            if negative:
+                return int_bits, kept
+            return increment_fraction(int_bits, kept)
+
+        if mode == 'down':
+            if negative:
+                return increment_fraction(int_bits, kept)
+            return int_bits, kept
+
+        if mode == 'nearest':
+            first_discard = discarded[0]
+            if first_discard == '0':
+                return int_bits, kept
+            if len(discarded) > 1 and any(ch == '1' for ch in discarded[1:]):
+                return increment_fraction(int_bits, kept)
+            if kept and kept[-1] == '1':
+                return increment_fraction(int_bits, kept)
+            return int_bits, kept
+
+        raise ValueError("Unknown rounding mode")
+
+    if bits == 0:
+        return (
+            ('-' if negative else '') + int_part,
+            ('-' if negative else '') + int_part,
+            ('-' if negative else '') + int_part,
+            ('-' if negative else '') + int_part,
+        )
+
+    int_bits, frac_bits = round_fraction('trunc', int_part, frac_part)
+    trunc_res = format_value(int_bits, frac_bits)
+
+    int_bits, frac_bits = round_fraction('up', int_part, frac_part)
+    up_res = format_value(int_bits, frac_bits)
+
+    int_bits, frac_bits = round_fraction('down', int_part, frac_part)
+    down_res = format_value(int_bits, frac_bits)
+
+    int_bits, frac_bits = round_fraction('nearest', int_part, frac_part)
+    nearest_res = format_value(int_bits, frac_bits)
+
+    return trunc_res, up_res, down_res, nearest_res
 
 def main():
     choice = input("Choose a task:\n1. Decimal → IEEE 754 Double\n2. Rounding Methods\n3. Arithmetic (GRS Method)\nEnter 1, 2, or 3: ")
