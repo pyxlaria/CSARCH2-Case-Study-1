@@ -92,6 +92,18 @@ const IEEE754 = (() => {
         return hex;
     }
 
+    // converts a raw 64-bit binary string into its 16-character hex representation
+    function bitsToHex(bits) {
+        bits = String(bits).replace(/\s/g, '');
+        if (bits.length !== 64) return null;
+
+        let hex = '';
+        for (let i = 0; i < 64; i += 4) {
+            hex += parseInt(bits.substring(i, i + 4), 2).toString(16).toUpperCase();
+        }
+        return hex;
+    }
+
     // breaks a number down into sign, bigint mantissa, and exponent
     function decompose(num) {
         let bits = getBits(num);
@@ -131,6 +143,7 @@ const IEEE754 = (() => {
         fromDecimal,
         hexToDouble,
         doubleToHex,
+        bitsToHex,
         decompose,
         encode,
         BIAS: 1023
