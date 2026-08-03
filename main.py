@@ -112,8 +112,10 @@ def truncate_bin(int_part, frac_part, len_bin, bits):
         int_len = len(int_part)
         frac_len = len(frac_part)
         if int_len >= bits:
-            # keep only the integer part, truncate fractional part
-            return int_part[:bits], ''
+            # keep and truncate only the integer part, add zeros to fill in the rest of the integer part
+            res = int_part[:bits]
+            res += '0' * (len_bin - bits)
+            return res, ''
         else:
             # keep all of integer part and some of fractional part
             remaining_bits = bits - int_len
@@ -128,8 +130,10 @@ def round_up_bin(int_part, frac_part, len_bin, bits):
         int_len = len(int_part)
         frac_len = len(frac_part)
         if int_len >= bits:
-            # keep only the integer part, round up fractional part
-            return int_part[:bits], ''
+            # keep and round up only the integer part, fill in rest of integer part with zeros
+            res = bin(int(int_part[:bits], 2) + 1)[2:].zfill(bits)
+            res += '0' * (len_bin - bits)
+            return res, ''
         else:
             # keep all of integer part and some of fractional part
             remaining_bits = bits - int_len
@@ -153,8 +157,10 @@ def round_down_bin(int_part, frac_part, len_bin, bits):
         int_len = len(int_part)
         frac_len = len(frac_part)
         if int_len >= bits:
-            # keep only the integer part, round down fractional part
-            return int_part[:bits], ''
+            # keep and round down only the integer part, fill in rest of integer part with zeros
+            res = int_part[:bits]
+            res += '0' * (len_bin - bits)
+            return res, ''
         else:
             # keep all of integer part and some of fractional part
             remaining_bits = bits - int_len
@@ -170,8 +176,17 @@ def round_to_nearest_bin(int_part, frac_part, len_bin, bits):
         int_len = len(int_part)
         frac_len = len(frac_part)
         if int_len >= bits:
-            # keep only the integer part, round fractional part to nearest
-            return int_part[:bits], ''
+            # keep and round integer part to nearest, fill in rest of integer part with zeros
+            if int(int_part[:bits], 2) % 2 == 0:
+                # even, round down
+                res = int_part[:bits]
+                res += '0' * (len_bin - bits)
+                return res, ''
+            else:
+                # odd, round up
+                res = bin(int(int_part[:bits], 2) + 1)[2:].zfill(bits)
+                res += '0' * (len_bin - bits)
+                return res, ''
         else:
             # keep all of integer part and some of fractional part
             remaining_bits = bits - int_len
