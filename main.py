@@ -1,6 +1,7 @@
 import numpy as np
 import struct
 
+
 def dec_to_ieee(num):
     sign = '0' if num >= 0 else '1'
     num = abs(num)
@@ -14,7 +15,7 @@ def dec_to_ieee(num):
 
     # convert fractional part to binary
     frac_bin = []
-    while frac_part and len(frac_bin) < 23:
+    while frac_part and len(frac_bin) < 60:
         frac_part *= 2
         bit = int(frac_part)
         frac_bin.append(str(bit))
@@ -25,14 +26,14 @@ def dec_to_ieee(num):
     mantissa = int_bin[1:] + ''.join(frac_bin)
 
     # adjust mantissa to 23 bits
-    mantissa = (mantissa + '0' * 23)[:23]
+    mantissa = (mantissa + '0' * 52)[:52]
 
-    # exponent with bias (127)
-    exponent_bin = f"{exponent + 127:08b}"
+    # exponent with bias (1023)
+    exponent_bin = f"{exponent + 1023:11b}"
 
     # merge into one binary string
     res = sign + exponent_bin + mantissa
-    res_full = res + '0' * (32 - len(res))  # pad to 32 bits if necessary
+    res_full = res + '0' * (64 - len(res))  # pad to 64 bits if necessary
 
     return res_full
 
@@ -295,7 +296,9 @@ def round_binary(bin_str, bits):
 
     return chopped_res, rounded_up_res, rounded_down_res, rounded_nearest_res
 
+# ============================================================
 # IEEE-754 Arithmetic (GRS Method)
+# ============================================================
 def multiply_mantissas(mant1, mant2):
 
     value1 = int(mant1, 2)
@@ -778,13 +781,17 @@ def main():
 
     if choice == '1':
         n = float(input("Enter a decimal number: "))
-        bin_rep = dec_to_ieee(n)
+        bin_rep = decimal_to_ieee_binary64(n)
         # format binary representation into groups of 4
-        bin_formatted = f"{bin_rep[0:4]} {bin_rep[4:8]} {bin_rep[8:12]} {bin_rep[12:16]} {bin_rep[16:20]} {bin_rep[20:24]} {bin_rep[24:28]} {bin_rep[28:32]}"
+        
+
+        bin_formatted = " ".join(
+        bin_rep[i:i+4] for i in range(0, len(bin_rep), 4)
+        )
         print(bin_formatted)
 
         # convert binary to hexadecimal
-        hex_rep = bin_to_hex(bin_rep)
+        hex_rep = binary64_to_hex(bin_rep)
         print(hex_rep)
 
     elif choice == '2':
@@ -822,7 +829,9 @@ def main():
             print("Round-to-nearest, ties-to-even:", round_nearest)
 
     elif choice == '3':
+        # -----------------------------
         # Operand A
+        # -----------------------------
         fmt1 = input("Operand A format (D=Decimal, H=IEEE Hex): ").strip().upper()
 
         if fmt1 == "D":
@@ -838,7 +847,9 @@ def main():
             return
 
 
+        # -----------------------------
         # Operand B
+        # -----------------------------
         fmt2 = input("Operand B format (D=Decimal, H=IEEE Hex): ").strip().upper()
 
         if fmt2 == "D":
@@ -886,7 +897,3 @@ def main():
         print("Decimal:")
         print(decimal_result)
         
-
-if __name__ == "__main__": # only activates main function if main is executed directly (just incase)
-    main()
-
