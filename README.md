@@ -5,23 +5,19 @@ Click this Google Colab link to proceed: https://colab.research.google.com/drive
 
 The application covers three main functions. First, it converts a decimal input into IEEE 754 binary64 form and displays the result in grouped binary and hexadecimal output. Second, it demonstrates rounding for both decimal and binary inputs using chopping, round-up, round-down, and round-to-nearest, ties-to-even. Third, it performs IEEE 754 binary64 arithmetic using the GRS method for addition and multiplication, then presents the final binary, hexadecimal, decimal, and step-by-step solution.
 
-Project Overview
+# Project Overview
 
 The purpose of this project is to make IEEE 754 operations easier to explore in a browser-based environment. Instead of using a command-line interface, the user interacts with a clean Gradio page that organizes each task into its own section. This is useful for class demonstrations, screenshots, and test case documentation because the interface keeps the input and output fields visible and consistent.
 
-Interface Style
+# Interface Style
 
 The interface uses a black and white theme with a modern minimal layout. The visual design avoids decorative elements and unnecessary colors so that the project remains professional and easy to present. Each task is separated into its own section, the spacing is kept clean, and the output areas are large enough to make screenshots clear.
 
-How to Run in Google Colab
+# How to Run in Google Colab
 
-Open the Google Colab notebook using the link above. Once the notebook is open, run the setup cell if Gradio is not yet installed. The application can be started directly from the notebook after the file is uploaded or pasted into a Colab cell.
+Open the Google Colab notebook using the link above. Once the notebook is open, run the setup cell by simply clicking the run button (usually located at the top left).
 
-If Gradio is not installed yet, run the following command first:
-
-!pip install gradio
-
-After that, run the main script. Once the app launches, Colab will generate a Gradio link that you can open to access the interface.
+Once the app launches, Colab will generate a Gradio link that you can open to access the interface.
 
 Main Features
 
