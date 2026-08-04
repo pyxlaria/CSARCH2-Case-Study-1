@@ -295,9 +295,7 @@ def round_binary(bin_str, bits):
 
     return chopped_res, rounded_up_res, rounded_down_res, rounded_nearest_res
 
-# ============================================================
 # IEEE-754 Arithmetic (GRS Method)
-# ============================================================
 def multiply_mantissas(mant1, mant2):
 
     value1 = int(mant1, 2)
@@ -824,9 +822,7 @@ def main():
             print("Round-to-nearest, ties-to-even:", round_nearest)
 
     elif choice == '3':
-        # -----------------------------
         # Operand A
-        # -----------------------------
         fmt1 = input("Operand A format (D=Decimal, H=IEEE Hex): ").strip().upper()
 
         if fmt1 == "D":
@@ -842,9 +838,7 @@ def main():
             return
 
 
-        # -----------------------------
         # Operand B
-        # -----------------------------
         fmt2 = input("Operand B format (D=Decimal, H=IEEE Hex): ").strip().upper()
 
         if fmt2 == "D":
