@@ -111,15 +111,9 @@ def truncate_bin(int_part, frac_part, len_bin, bits):
         # determine how many bits to keep from integer and fractional parts
         int_len = len(int_part)
         frac_len = len(frac_part)
-        if int_len >= bits:
-            # keep and truncate only the integer part, add zeros to fill in the rest of the integer part
-            res = int_part[:bits]
-            res += '0' * (len_bin - bits)
-            return res, ''
-        else:
-            # keep all of integer part and some of fractional part
-            remaining_bits = bits - int_len
-            return int_part, frac_part[:remaining_bits]
+        # keep all of integer part and some of fractional part
+        remaining_bits = bits - int_len
+        return int_part, frac_part[:remaining_bits]
 
 def round_up_bin(int_part, frac_part, len_bin, bits):
     # round up a signed binary floating point string to a certain number of bits
@@ -129,23 +123,17 @@ def round_up_bin(int_part, frac_part, len_bin, bits):
         # determine how many bits to keep from integer and fractional parts
         int_len = len(int_part)
         frac_len = len(frac_part)
-        if int_len >= bits:
-            # keep and round up only the integer part, fill in rest of integer part with zeros
-            res = bin(int(int_part[:bits], 2) + 1)[2:].zfill(bits)
-            res += '0' * (len_bin - bits)
-            return res, ''
-        else:
-            # keep all of integer part and some of fractional part
-            remaining_bits = bits - int_len
-            new_frac = frac_part[:remaining_bits]
-            if remaining_bits < frac_len and '1' in frac_part[remaining_bits:]:
-                # need to round up
-                new_frac = bin(int(new_frac, 2) + 1)[2:].zfill(remaining_bits)
-                if len(new_frac) > remaining_bits:
-                    # carry over to integer part
-                    new_int = bin(int(int_part, 2) + 1)[2:]
-                    return new_int, new_frac[1:]  # drop the leading '1' from fractional part
-            return int_part, new_frac
+        # keep all of integer part and some of fractional part
+        remaining_bits = bits - int_len
+        new_frac = frac_part[:remaining_bits]
+        if remaining_bits < frac_len and '1' in frac_part[remaining_bits:]:
+            # need to round up
+            new_frac = bin(int(new_frac, 2) + 1)[2:].zfill(remaining_bits)
+            if len(new_frac) > remaining_bits:
+                # carry over to integer part
+                new_int = bin(int(int_part, 2) + 1)[2:]
+                return new_int, new_frac[1:]  # drop the leading '1' from fractional part
+        return int_part, new_frac
 
 def round_down_bin(int_part, frac_part, len_bin, bits):
     # round down a signed binary floating point string to a certain number of bits
@@ -156,16 +144,10 @@ def round_down_bin(int_part, frac_part, len_bin, bits):
         # determine how many bits to keep from integer and fractional parts
         int_len = len(int_part)
         frac_len = len(frac_part)
-        if int_len >= bits:
-            # keep and round down only the integer part, fill in rest of integer part with zeros
-            res = int_part[:bits]
-            res += '0' * (len_bin - bits)
-            return res, ''
-        else:
-            # keep all of integer part and some of fractional part
-            remaining_bits = bits - int_len
-            new_frac = frac_part[:remaining_bits]
-            return int_part, new_frac
+        # keep all of integer part and some of fractional part
+        remaining_bits = bits - int_len
+        new_frac = frac_part[:remaining_bits]
+        return int_part, new_frac
 
 def round_to_nearest_bin(int_part, frac_part, len_bin, bits):
     # round to nearest, ties to even for signed binary floating point string
@@ -176,17 +158,10 @@ def round_to_nearest_bin(int_part, frac_part, len_bin, bits):
         int_len = len(int_part)
         frac_len = len(frac_part)
         if int_len >= bits:
-            # keep and round integer part to nearest, fill in rest of integer part with zeros
-            if int(int_part[:bits], 2) % 2 == 0:
-                # even, round down
-                res = int_part[:bits]
-                res += '0' * (len_bin - bits)
-                return res, ''
-            else:
-                # odd, round up
-                res = bin(int(int_part[:bits], 2) + 1)[2:].zfill(bits)
-                res += '0' * (len_bin - bits)
-                return res, ''
+            # odd, round up
+            res = bin(int(int_part[:bits], 2) + 1)[2:].zfill(bits)
+            res += '0' * (len_bin - bits)
+            return res, ''
         else:
             # keep all of integer part and some of fractional part
             remaining_bits = bits - int_len
@@ -275,7 +250,12 @@ def main():
     elif choice == '2':
         round_choice = input("Choose an input format: \n1. Decimal\n2. Binary\nEnter 1 or 2: ")
         if round_choice == '1':
-            num = float(input("Enter a decimal number: "))
+            user_input = input("Enter a decimal number: ")
+            try:
+                num = float(user_input)
+            except ValueError:
+                print("Invalid input. Please enter a valid decimal number.")
+                return
             digits = int(input("Enter target significant digits: "))
             # implements rounding methods for decimal input
             chopped, rounded_up, rounded_down, rounded_to_nearest = round_decimal(num, digits)
@@ -285,7 +265,14 @@ def main():
             print("Round-to-nearest, ties-to-even:", rounded_to_nearest)
 
         elif round_choice == '2':
-            bin_num = input("Enter a binary number: ")
+            try:
+                bin_num = input("Enter a signed binary floating point number (e.g., -110.101): ")
+                # validate binary input
+                if not all(c in '01.-' for c in bin_num) or bin_num.count('.') > 1 or (bin_num[0] not in '-+' and not bin_num[0].isdigit()):
+                    raise ValueError("Invalid binary input format")
+            except ValueError as e:
+                print(e)
+                return
             bits = int(input("Enter target bits: "))
             # implement rounding methods for signed binary floating point input
             chopped, round_up, round_down, round_nearest = round_binary(bin_num, bits)
