@@ -1,4 +1,5 @@
 import numpy as np
+import struct
 
 def dec_to_ieee(num):
     sign = '0' if num >= 0 else '1'
@@ -294,6 +295,349 @@ def round_binary(bin_str, bits):
 
     return chopped_res, rounded_up_res, rounded_down_res, rounded_nearest_res
 
+# ============================================================
+# IEEE-754 Arithmetic (GRS Method)
+# ============================================================
+def add_mantissas(sign1, mant1, sign2, mant2):
+    """
+    Add or subtract two aligned mantissas depending on their signs.
+
+    Returns:
+        result_sign
+        result_mantissa
+    """
+
+    value1 = int(mant1, 2)
+    value2 = int(mant2, 2)
+
+    # Same sign → addition
+    if sign1 == sign2:
+        result = value1 + value2
+        result_sign = sign1
+
+    # Different signs → subtraction
+    else:
+        if value1 >= value2:
+            result = value1 - value2
+            result_sign = sign1
+        else:
+            result = value2 - value1
+            result_sign = sign2
+
+    result_bits = format(result, "b")
+
+    return result_sign, result_bits
+
+def normalize_result(mantissa, exponent):
+    """
+    Normalize a binary mantissa after addition/subtraction.
+
+    Returns:
+        normalized_mantissa
+        updated_exponent
+    """
+
+    # Zero result
+    if int(mantissa, 2) == 0:
+        return mantissa, exponent
+
+    # Carry after addition
+    if len(mantissa) > 53:
+        mantissa = mantissa[:-1]
+        exponent += 1
+
+    # Left-normalize after subtraction
+    else:
+        while len(mantissa) < 53 or mantissa[0] != "1":
+            mantissa = mantissa[1:] + "0"
+            exponent -= 1
+
+    return mantissa, exponent
+
+def apply_grs_rounding(mantissa, exponent, guard, round_bit, sticky):
+    """
+    Apply Guard-Round-Sticky (GRS) rounding using
+    round-to-nearest, ties-to-even.
+
+    Returns:
+        rounded_mantissa
+        updated_exponent
+    """
+
+    # Round if:
+    # G = 1 and
+    # (R = 1 or S = 1 or LSB is odd)
+
+    lsb = mantissa[-1]
+
+    should_round = (
+        guard == "1" and
+        (
+            round_bit == "1" or
+            sticky == "1" or
+            lsb == "1"
+        )
+    )
+
+    if should_round:
+
+        value = int(mantissa, 2) + 1
+
+        mantissa = format(value, "b")
+
+        # Overflow after rounding
+        if len(mantissa) > 53:
+            mantissa = mantissa[:-1]
+            exponent += 1
+
+    return mantissa, exponent
+
+def assemble_ieee_binary64(sign, exponent, mantissa):
+    """
+    Assemble the final IEEE-754 double precision binary.
+
+    mantissa includes the hidden leading 1.
+    """
+
+    biased = exponent + 1023
+
+    exponent_bits = f"{biased:011b}"
+
+    fraction = mantissa[1:]
+
+    fraction = fraction.ljust(52, "0")[:52]
+
+    return sign + exponent_bits + fraction
+
+def binary64_to_hex(binary):
+    return f"{int(binary,2):016X}"
+
+def ieee_binary64_to_decimal(binary):
+    integer = int(binary,2)
+
+    packed = struct.pack(">Q", integer)
+
+    return struct.unpack(">d", packed)[0]
+
+def ieee_add(op1, op2):
+    """
+    Perform IEEE-754 double precision addition
+    using the GRS method.
+
+    Returns:
+        binary_result
+        hexadecimal_result
+        decimal_result
+        steps
+    """
+    binary1 = decimal_to_ieee_binary64(op1)
+    binary2 = decimal_to_ieee_binary64(op2)
+    sign1, exp1_bits, mant1, exp1 = extract_ieee_fields(binary1)
+    sign2, exp2_bits, mant2, exp2 = extract_ieee_fields(binary2)
+
+    steps = []
+    steps.append("INPUTS")
+
+    steps.append(f"Operand A = {op1}")
+    steps.append(f"Operand B = {op2}")
+
+    steps.append("")
+    steps.append("IEEE REPRESENTATION")
+
+    steps.append(binary1)
+    steps.append(binary2)
+
+    exp, mant1, mant2, g, r, s = align_exponents(
+    exp1,
+    mant1,
+    exp2,
+    mant2)
+
+    steps.append("")
+    steps.append("EXPONENT ALIGNMENT")
+
+    steps.append(f"Aligned exponent = {exp}")
+
+    steps.append(f"Mantissa A = {mant1}")
+    steps.append(f"Mantissa B = {mant2}")
+
+    steps.append(f"G={g} R={r} S={s}")
+
+    result_sign, result_mantissa = add_mantissas(
+    sign1,
+    mant1,
+    sign2,  
+    mant2)
+
+    result_mantissa, exp = normalize_result(
+    result_mantissa,
+    exp)
+
+    result_mantissa, exp = apply_grs_rounding(
+    result_mantissa,
+    exp,
+    g,
+    r,
+    s)
+
+    steps.append("")
+    steps.append("NORMALIZATION")
+
+    steps.append(f"Exponent = {exp}")
+    steps.append(f"Mantissa = {result_mantissa}")
+
+    steps.append("")
+    steps.append("MANTISSA RESULT")
+    steps.append(result_mantissa)
+
+    steps.append("")
+    steps.append("GRS ROUNDING")
+
+    steps.append(f"Guard  = {g}")
+    steps.append(f"Round  = {r}")
+    steps.append(f"Sticky = {s}")
+
+    steps.append(f"Rounded Mantissa = {result_mantissa}")
+    steps.append(f"Exponent = {exp}")
+
+    binary_result = assemble_ieee_binary64(
+    result_sign,
+    exp,
+    result_mantissa)
+
+    steps.append("")
+    steps.append("FINAL IEEE-754 BINARY")
+    steps.append(binary_result)
+
+    hex_result = binary64_to_hex(binary_result)
+
+    steps.append("")
+    steps.append("HEXADECIMAL")
+    steps.append(hex_result)
+
+    decimal_result = ieee_binary64_to_decimal(binary_result)
+
+    steps.append("")
+    steps.append("DECIMAL")
+    steps.append(str(decimal_result))
+
+    return (
+    binary_result,
+    hex_result,
+    decimal_result,
+    steps)
+
+def extract_ieee_fields(binary64):
+    """
+    Extract the IEEE-754 single precision fields from a 32-bit binary string.
+
+    Returns:
+        sign        : '0' or '1'
+        exponent    : exponent bits (8 bits)
+        mantissa    : mantissa INCLUDING the hidden leading bit
+        unbiased_exp: exponent value without bias
+    """
+
+    if len(binary64) != 64:
+        raise ValueError("IEEE binary must contain exactly 64 bits.")
+
+    sign = binary64[0]
+    exponent = binary64[1:12]
+    fraction = binary64[12:]
+
+    exponent_value = int(exponent, 2)
+
+    # Special case: subnormal numbers
+    if exponent_value == 0:
+        hidden_bit = "0"
+        unbiased_exp = -1022
+
+    else:
+        hidden_bit = "1"
+        unbiased_exp = exponent_value - 1023
+
+    mantissa = hidden_bit + fraction
+
+    return sign, exponent, mantissa, unbiased_exp
+
+def align_exponents(exp1, mant1, exp2, mant2):
+    """
+    Align two mantissas by shifting the one with the smaller exponent.
+
+    Returns:
+        exponent
+        aligned_mantissa1
+        aligned_mantissa2
+        guard
+        round_bit
+        sticky
+    """
+
+    guard = "0"
+    round_bit = "0"
+    sticky = "0"
+
+    # Ensure exp1 >= exp2
+    if exp2 > exp1:
+        exp1, exp2 = exp2, exp1
+        mant1, mant2 = mant2, mant1
+
+    shift = exp1 - exp2
+
+    if shift == 0:
+        return exp1, mant1, mant2, guard, round_bit, sticky
+
+    mant2 = list(mant2)
+
+    for i in range(shift):
+
+        # Bit shifted out
+        shifted = mant2.pop()
+
+        # Sticky accumulates everything after Round
+        if guard == "1":
+            sticky = "1" if (sticky == "1" or round_bit == "1") else "0"
+
+        round_bit = guard
+        guard = shifted
+
+        # Shift right
+        mant2.insert(0, '0')
+
+    return exp1, mant1, ''.join(mant2), guard, round_bit, sticky
+
+def decimal_to_ieee_binary64(value):
+    """
+    Convert a Python float into an IEEE-754 double-precision
+    64-bit binary string.
+    """
+
+    packed = struct.pack(">d", float(value))
+    integer = struct.unpack(">Q", packed)[0]
+
+    return f"{integer:064b}"
+
+def ieee_binary_to_decimal(binary64):
+    """
+    Convert a 64-bit IEEE binary string back to decimal.
+    """
+
+    integer = int(binary64, 2)
+
+    packed = struct.pack(">Q", integer)
+
+    return struct.unpack(">d", packed)[0]
+
+if __name__ == "__test__":
+    binary = decimal_to_ieee_binary64(12.75)
+
+    s, e, m, exp = extract_ieee_fields(binary)
+
+    print("Sign:", s)
+    print("Exponent:", e)
+    print("Mantissa:", m)
+    print("Exponent Value:", exp)
+
 def main():
     choice = input("Choose a task:\n1. Decimal → IEEE 754 Double\n2. Rounding Methods\n3. Arithmetic (GRS Method)\nEnter 1, 2, or 3: ")
 
@@ -343,8 +687,55 @@ def main():
             print("Round-to-nearest, ties-to-even:", round_nearest)
 
     elif choice == '3':
+        fmt1 = input("Operand A format (D=Decimal, H=IEEE Hex): ").upper()
+        op1 = input("Operand A: ")
 
-        pass
+        fmt2 = input("Operand B format (D=Decimal, H=IEEE Hex): ").upper()
+        op2 = input("Operand B: ")
+
+        operation = input("Operation (+ or *): ")
+
+        if fmt1 == "H":
+            op1 = ieee_binary64_to_decimal(f"{int(op1,16):064b}")
+        else:
+            op1 = float(op1)
+
+        if fmt2 == "H":
+            op2 = ieee_binary64_to_decimal(f"{int(op2,16):064b}")
+        else:
+            op2 = float(op2)
+
+        if operation == "+":
+            binary, hexa, decimal, steps = ieee_add(op1, op2)
+
+        elif operation == "*":
+            print("Multiplication not yet implemented.")
+            return
+
+        else:
+            print("Invalid operation.")
+            return
+
+        print("\n========== SOLUTION ==========\n")
+
+        for line in steps:
+            print(line)
+
+        print("\n========== FINAL ANSWER ==========\n")
+
+        print("Binary:")
+        print(binary)
+
+        print()
+
+        print("Hexadecimal:")
+        print(hexa)
+
+        print()
+
+        print("Decimal:")
+        print(decimal)
+        
 
 if __name__ == "__main__": # only activates main function if main is executed directly (just incase)
     main()
