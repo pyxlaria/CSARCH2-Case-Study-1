@@ -1,165 +1,53 @@
 # CSARCH2-Case-Study-1
-This project is a web-based IEEE 754 calculator built for Google Colab. The interface is intentionally simple, black and white, and focused on the actual outputs rather than visual decoration.
+This project is a web-based IEEE 754 calculator designed to run in Google Colab with Gradio as the graphical user interface. The layout is intentionally monochrome, minimal, and focused on readability so that the outputs are easy to inspect during demonstrations and testing.
 
-The current implementation covers three main tasks:
+Click this Google Colab link to proceed:
 
-Convert a decimal number to IEEE 754 binary64, then display the result in grouped binary and hexadecimal.
+The application covers three main functions. First, it converts a decimal input into IEEE 754 binary64 form and displays the result in grouped binary and hexadecimal output. Second, it demonstrates rounding for both decimal and binary inputs using chopping, round-up, round-down, and round-to-nearest, ties-to-even. Third, it performs IEEE 754 binary64 arithmetic using the GRS method for addition and multiplication, then presents the final binary, hexadecimal, decimal, and step-by-step solution.
 
-Demonstrate rounding for both decimal and binary inputs using chopping, round-up, round-down, and round-to-nearest ties-to-even.
+Project Overview
 
-Perform IEEE 754 binary64 arithmetic using the GRS method for addition and multiplication, then show the final binary, hexadecimal, decimal, and step-by-step solution.
-
-Main Features
-
-1. Decimal to IEEE 754 Conversion
-
-Accepts a decimal number.
-
-Converts it to IEEE 754 binary64.
-
-Displays the 64-bit binary output in grouped form.
-
-Displays the hexadecimal equivalent.
-
-2. Rounding Methods
-
-Supports decimal input and signed binary floating-point input.
-
-Shows all four rounding methods:
-
-Chopping
-
-Round-up
-
-Round-down
-
-Round-to-nearest, ties-to-even
-
-3. Arithmetic Using the GRS Method
-
-Accepts operands in decimal or IEEE hexadecimal form.
-
-Supports addition and multiplication.
-
-Shows the full solution flow, including:
-
-Input values
-
-IEEE representation
-
-Exponent alignment
-
-Mantissa handling
-
-GRS rounding
-
-Final binary, hexadecimal, and decimal results
+The purpose of this project is to make IEEE 754 operations easier to explore in a browser-based environment. Instead of using a command-line interface, the user interacts with a clean Gradio page that organizes each task into its own section. This is useful for class demonstrations, screenshots, and test case documentation because the interface keeps the input and output fields visible and consistent.
 
 Interface Style
 
-The GUI is designed to stay minimal.
-
-Black and white only
-
-Clean spacing
-
-Separate sections for each task
-
-No extra visual clutter
-
-This keeps the focus on the computation and the output, which is the main requirement of the project.
+The interface uses a black and white theme with a modern minimal layout. The visual design avoids decorative elements and unnecessary colors so that the project remains professional and easy to present. Each task is separated into its own section, the spacing is kept clean, and the output areas are large enough to make screenshots clear.
 
 How to Run in Google Colab
 
-Upload the Python file to your Colab notebook.
+Open the Google Colab notebook using the link above. Once the notebook is open, run the setup cell if Gradio is not yet installed. The application can be started directly from the notebook after the file is uploaded or pasted into a Colab cell.
 
-Make sure Gradio is installed.
-
-Run the script.
-
-Open the generated Gradio link.
-
-If Gradio is not installed yet, run:
+If Gradio is not installed yet, run the following command first:
 
 !pip install gradio
 
-Then run the script again.
+After that, run the main script. Once the app launches, Colab will generate a Gradio link that you can open to access the interface.
 
-Example Inputs
+Main Features
 
-Task 1: Decimal to IEEE 754
+The Decimal to IEEE 754 section accepts a decimal number and converts it into IEEE 754 binary64 form. The output is shown in grouped binary format and in hexadecimal, which makes it easier to verify the bit pattern during testing.
 
-Example input:
+The Rounding Methods section accepts either a decimal number or a signed binary floating-point number. It displays the result of chopping, round-up, round-down, and round-to-nearest, ties-to-even. This section is intended to demonstrate how the same value changes under different rounding rules.
 
-12.75
+The Arithmetic Using the GRS Method section accepts operands in decimal or IEEE hexadecimal form. It supports addition and multiplication and displays the complete solution flow, including the inputs, IEEE representation, exponent alignment, mantissa processing, GRS rounding, and final binary, hexadecimal, and decimal results.
 
-Expected output:
+Example Inputs and Outputs
 
-64-bit IEEE binary64 representation
+For Decimal to IEEE 754 conversion, a sample input is 12.75. The expected output is the IEEE 754 binary64 representation of the value, shown in grouped binary form, together with its hexadecimal equivalent.
 
-Hexadecimal form
+For decimal rounding, a sample input is 123.456 with a target of 4 significant digits. The expected output is the chopped value, the round-up value, the round-down value, and the round-to-nearest, ties-to-even value.
 
-Task 2: Rounding Methods
+For binary rounding, a sample input is -110.101101 with a target of 5 bits. The expected output is the corresponding rounded values under the same four rounding methods.
 
-Decimal example:
-
-Number: 123.456
-Target significant digits: 4
-
-Binary example:
-
-Signed binary input: -110.101101
-Target bits: 5
-
-Expected output:
-
-Chopped value
-
-Round-up value
-
-Round-down value
-
-Round-to-nearest, ties-to-even value
-
-Task 3: Arithmetic Using GRS
-
-Example addition:
-
-Operand A format: Decimal
-Operand A: 12.5
-Operand B format: IEEE Hex
-Operand B: 400A000000000000
-Operation: +
-
-Example multiplication:
-
-Operand A format: Decimal
-Operand A: 6.25
-Operand B format: Decimal
-Operand B: 2.0
-Operation: *
-
-Expected output:
-
-Final 64-bit binary result
-
-Final hexadecimal result
-
-Final decimal result
-
-Step-by-step solution
+For arithmetic using the GRS method, a sample addition input is Operand A = 12.5 in decimal, Operand B = 400A000000000000 in IEEE hexadecimal, and Operation = +. A sample multiplication input is Operand A = 6.25 in decimal, Operand B = 2.0 in decimal, and Operation = *.
 
 Project Structure
 
-gradio_colab.py
-README.md
-screenshots/
+The main application file is gradio_colab.py. The project README is this file, and the screenshots used for testing should be stored in a screenshots/ folder if you decide to keep them in the repository. The Colab notebook or Colab link may also be included in the repository description or in the website section of the GitHub repository, depending on your submission requirements.
 
-The screenshots folder can be used for saved outputs and test case images.
+Test Case Documentation Guide
 
-Test Case Documentation Skeleton
-
-Use the template below when adding screenshots to the repository.
+The only part that should remain incomplete before submission is the screenshot field for each test case. Everything else below is ready to paste into GitHub and can be reused as the documentation format for your screenshots.
 
 Test Case Template
 
@@ -173,7 +61,7 @@ Decimal to IEEE 754 conversion
 
 Description
 
-Verify that a decimal input is converted to IEEE 754 binary64 and hexadecimal correctly.
+This test verifies that a decimal value is converted correctly into IEEE 754 binary64 format and hexadecimal form.
 
 Input
 
@@ -181,11 +69,11 @@ Input
 
 Expected Result
 
-The binary64 representation should appear in grouped binary form.
+The output should display the grouped 64-bit binary representation and the uppercase hexadecimal representation that correspond to the input value.
 
-The hexadecimal value should appear in uppercase.
+Actual Result
 
-The output should match the computed IEEE 754 value for the input.
+[Insert the actual observed result here]
 
 Screenshot
 
@@ -193,93 +81,260 @@ Screenshot
 
 Notes
 
-Add any special observation here.
+[Insert any special observation here]
 
-Suggested Test Case List
+Test Case Skeletons
 
 TC-01 Normal Conversion
 
-Decimal input: a positive number with a fractional part
+Test Case ID
 
-Example: 12.75
+TC-01
 
-Screenshot: insert here
+Feature
+
+Decimal to IEEE 754 conversion
+
+Description
+
+Verify that a positive decimal number with a fractional part is converted correctly.
+
+Input
+
+12.75
+
+Expected Result
+
+The interface should display the binary64 result in grouped form and the matching hexadecimal value.
+
+Actual Result
+
+[Insert the observed output here]
+
+Screenshot
+
+[Insert screenshot here]
 
 TC-02 Special Conversion
 
-Decimal input: zero
+Test Case ID
 
-Example: 0
+TC-02
 
-Screenshot: insert here
+Feature
+
+Decimal to IEEE 754 conversion
+
+Description
+
+Verify the behavior when the input is zero.
+
+Input
+
+0
+
+Expected Result
+
+The interface should display the IEEE 754 representation for zero and the corresponding hexadecimal output.
+
+Actual Result
+
+[Insert the observed output here]
+
+Screenshot
+
+[Insert screenshot here]
 
 TC-03 Edge Conversion
 
-Decimal input: a negative value
+Test Case ID
 
-Example: -5.5
+TC-03
 
-Screenshot: insert here
+Feature
+
+Decimal to IEEE 754 conversion
+
+Description
+
+Verify the behavior when the input is negative.
+
+Input
+
+-5.5
+
+Expected Result
+
+The interface should display the correct sign bit, binary64 representation, and hexadecimal output.
+
+Actual Result
+
+[Insert the observed output here]
+
+Screenshot
+
+[Insert screenshot here]
 
 TC-04 Decimal Rounding
 
-Decimal input with target significant digits
+Test Case ID
 
-Example: 123.456 with 4 digits
+TC-04
 
-Screenshot: insert here
+Feature
+
+Rounding methods for decimal input
+
+Description
+
+Verify the four rounding methods for a decimal number.
+
+Input
+
+123.456
+Target significant digits: 4
+
+Expected Result
+
+The interface should display chopped, round-up, round-down, and round-to-nearest, ties-to-even values.
+
+Actual Result
+
+[Insert the observed output here]
+
+Screenshot
+
+[Insert screenshot here]
 
 TC-05 Binary Rounding
 
-Signed binary input with target bits
+Test Case ID
 
-Example: -110.101101 with 5 bits
+TC-05
 
-Screenshot: insert here
+Feature
 
-TC-06 Addition
+Rounding methods for binary input
 
-Decimal operands using the GRS method
+Description
 
-Example: 12.5 + 3.25
+Verify the four rounding methods for a signed binary floating-point value.
 
-Screenshot: insert here
+Input
 
-TC-07 Multiplication
+-110.101101
+Target bits: 5
 
-Decimal operands using the GRS method
+Expected Result
 
-Example: 6.25 * 2.0
+The interface should display chopped, round-up, round-down, and round-to-nearest, ties-to-even values.
 
-Screenshot: insert here
+Actual Result
+
+[Insert the observed output here]
+
+Screenshot
+
+[Insert screenshot here]
+
+TC-06 Addition Using GRS
+
+Test Case ID
+
+TC-06
+
+Feature
+
+IEEE 754 addition using the GRS method
+
+Description
+
+Verify that two operands can be added correctly and that the step-by-step solution is displayed.
+
+Input
+
+Operand A format: Decimal
+Operand A: 12.5
+Operand B format: IEEE Hex
+Operand B: 400A000000000000
+Operation: +
+
+Expected Result
+
+The interface should display the complete solution, including alignment, mantissa processing, GRS rounding, and final outputs in binary, hexadecimal, and decimal form.
+
+Actual Result
+
+[Insert the observed output here]
+
+Screenshot
+
+[Insert screenshot here]
+
+TC-07 Multiplication Using GRS
+
+Test Case ID
+
+TC-07
+
+Feature
+
+IEEE 754 multiplication using the GRS method
+
+Description
+
+Verify that two operands can be multiplied correctly and that the step-by-step solution is displayed.
+
+Input
+
+Operand A format: Decimal
+Operand A: 6.25
+Operand B format: Decimal
+Operand B: 2.0
+Operation: *
+
+Expected Result
+
+The interface should display the complete solution, including mantissa multiplication, normalization, GRS rounding, and final outputs in binary, hexadecimal, and decimal form.
+
+Actual Result
+
+[Insert the observed output here]
+
+Screenshot
+
+[Insert screenshot here]
 
 TC-08 Hexadecimal Operand Input
 
-Use IEEE hexadecimal input for one or both operands
+Test Case ID
 
-Example: 400A000000000000 and 3FF0000000000000
+TC-08
 
-Screenshot: insert here
+Feature
 
-Sample Format for Screenshots Section
+Arithmetic with hexadecimal operands
 
-You can copy this format for every screenshot entry:
+Description
 
-### TC-01
-**Feature:** Decimal to IEEE 754 conversion  
-**Input:** 12.75  
-**Expected Result:** Binary64 and hexadecimal output are displayed  
-**Actual Result:** [Insert observation here]  
-**Screenshot:** [Insert image here]
+Verify that hexadecimal IEEE 754 operands are accepted and processed correctly.
 
-Short Project Summary
+Input
 
-This project serves as a learning tool for IEEE 754 binary64 representation, rounding behavior, and arithmetic under the GRS method. The Gradio interface makes it easier to test inputs quickly in Colab while keeping the layout clean and minimal.
+Operand A format: IEEE Hex
+Operand A: 400A000000000000
+Operand B format: IEEE Hex
+Operand B: 3FF0000000000000
+Operation: +
 
-Files
+Expected Result
 
-gradio_colab.py contains the Gradio-based application
+The interface should accept the hexadecimal inputs and display the correct final result with the full solution flow.
 
-README.md contains the project description and test case guide
+Actual Result
 
-screenshots/ is the recommended folder for output images
+[Insert the observed output here]
+
+Screenshot
+
+[Insert screenshot here]
