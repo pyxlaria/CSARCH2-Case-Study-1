@@ -19,7 +19,7 @@ Open the Google Colab notebook using the link above. Once the notebook is open, 
 
 Once the app launches, Colab will generate a Gradio link that you can open to access the interface.
 
-Main Features
+# Main Features
 
 The Decimal to IEEE 754 section accepts a decimal number and converts it into IEEE 754 binary64 form. The output is shown in grouped binary format and in hexadecimal, which makes it easier to verify the bit pattern during testing.
 
@@ -27,7 +27,7 @@ The Rounding Methods section accepts either a decimal number or a signed binary 
 
 The Arithmetic Using the GRS Method section accepts operands in decimal or IEEE hexadecimal form. It supports addition and multiplication and displays the complete solution flow, including the inputs, IEEE representation, exponent alignment, mantissa processing, GRS rounding, and final binary, hexadecimal, and decimal results.
 
-Example Inputs and Outputs
+# Example Inputs and Outputs
 
 For Decimal to IEEE 754 conversion, a sample input is 12.75. The expected output is the IEEE 754 binary64 representation of the value, shown in grouped binary form, together with its hexadecimal equivalent.
 
@@ -37,7 +37,7 @@ For binary rounding, a sample input is -110.101101 with a target of 5 bits. The 
 
 For arithmetic using the GRS method, a sample addition input is Operand A = 12.5 in decimal, Operand B = 400A000000000000 in IEEE hexadecimal, and Operation = +. A sample multiplication input is Operand A = 6.25 in decimal, Operand B = 2.0 in decimal, and Operation = *.
 
-Project Structure
+# Project Structure
 
 The main application file is gradio_colab.py. The project README is this file, and the screenshots used for testing should be stored in a screenshots/ folder if you decide to keep them in the repository. The Colab notebook or Colab link may also be included in the repository description or in the website section of the GitHub repository, depending on your submission requirements.
 
