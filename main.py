@@ -91,7 +91,7 @@ def round_decimal(num, digits):
     float_num = float(num)
 
     # chopping
-    chopped = truncate_dec(float_num, digits)
+    truncated = truncate_dec(float_num, digits)
 
     # round-up
     rounded_up = round_up_dec(float_num, digits)
@@ -102,7 +102,7 @@ def round_decimal(num, digits):
     # round-to-nearest, ties-to-even
     rounded_to_nearest = round_to_nearest_dec(float_num, digits)
 
-    return chopped, rounded_up, rounded_down, rounded_to_nearest
+    return truncated, rounded_up, rounded_down, rounded_to_nearest
 
 def truncate_bin(int_part, frac_part, len_bin, bits):
     # truncate a signed binary floating point string to a certain number of bits
@@ -269,8 +269,8 @@ def round_binary(bin_str, bits):
         len_bin = len(bin_str)
 
     # chopping
-    chopped_int, chopped_frac = truncate_bin(int_part, frac_part, len_bin, bits)
-    chopped_res = sign + chopped_int + ('.' + chopped_frac if chopped_frac else '')
+    truncated_int, truncated_frac = truncate_bin(int_part, frac_part, len_bin, bits)
+    truncated_res = sign + truncated_int + ('.' + truncated_frac if truncated_frac else '')
 
     # round-up
     if sign == '-':
@@ -294,7 +294,7 @@ def round_binary(bin_str, bits):
     rounded_nearest_int, rounded_nearest_frac = round_to_nearest_bin(int_part, frac_part, len_bin, bits)
     rounded_nearest_res = sign + rounded_nearest_int + ('.' + rounded_nearest_frac if rounded_nearest_frac else '')
 
-    return chopped_res, rounded_up_res, rounded_down_res, rounded_nearest_res
+    return truncated_res, rounded_up_res, rounded_down_res, rounded_nearest_res
 
 # ============================================================
 # IEEE-754 Arithmetic (GRS Method)
@@ -805,8 +805,8 @@ def main():
                 return
             digits = int(input("Enter target significant digits: "))
             # implements rounding methods for decimal input
-            chopped, rounded_up, rounded_down, rounded_to_nearest = round_decimal(num, digits)
-            print("Chopped:", chopped)
+            truncated, rounded_up, rounded_down, rounded_to_nearest = round_decimal(num, digits)
+            print("Truncated:", truncated)
             print("Round-up:", rounded_up)
             print("Round-down:", rounded_down)
             print("Round-to-nearest, ties-to-even:", rounded_to_nearest)
@@ -822,8 +822,8 @@ def main():
                 return
             bits = int(input("Enter target bits: "))
             # implement rounding methods for signed binary floating point input
-            chopped, round_up, round_down, round_nearest = round_binary(bin_num, bits)
-            print("Chopped:", chopped)
+            truncated, round_up, round_down, round_nearest = round_binary(bin_num, bits)
+            print("Truncated:", truncated)
             print("Round-up:", round_up)
             print("Round-down:", round_down)
             print("Round-to-nearest, ties-to-even:", round_nearest)
