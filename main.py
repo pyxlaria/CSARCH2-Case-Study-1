@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def dec_to_ieee(num):
     sign = '0' if num >= 0 else '1'
     num = abs(num)
@@ -111,9 +110,18 @@ def truncate_bin(int_part, frac_part, len_bin, bits):
         # determine how many bits to keep from integer and fractional parts
         int_len = len(int_part)
         frac_len = len(frac_part)
-        # keep all of integer part and some of fractional part
-        remaining_bits = bits - int_len
-        return int_part, frac_part[:remaining_bits]
+        if int_len >= bits:
+            # keep and truncate only the integer part, add zeros to fill in the rest of the integer part
+            res = int_part[:bits]
+            if int_len == bits:
+                return res, ''
+            else:
+                res += '0' * (len_bin - bits)
+                return res, ''
+        else:
+            # keep all of integer part and some of fractional part
+            remaining_bits = bits - int_len
+            return int_part, frac_part[:remaining_bits]
 
 def round_up_bin(int_part, frac_part, len_bin, bits):
     # round up a signed binary floating point string to a certain number of bits
@@ -123,17 +131,26 @@ def round_up_bin(int_part, frac_part, len_bin, bits):
         # determine how many bits to keep from integer and fractional parts
         int_len = len(int_part)
         frac_len = len(frac_part)
-        # keep all of integer part and some of fractional part
-        remaining_bits = bits - int_len
-        new_frac = frac_part[:remaining_bits]
-        if remaining_bits < frac_len and '1' in frac_part[remaining_bits:]:
-            # need to round up
-            new_frac = bin(int(new_frac, 2) + 1)[2:].zfill(remaining_bits)
-            if len(new_frac) > remaining_bits:
-                # carry over to integer part
-                new_int = bin(int(int_part, 2) + 1)[2:]
-                return new_int, new_frac[1:]  # drop the leading '1' from fractional part
-        return int_part, new_frac
+        if int_len >= bits:
+            # keep and round up only the integer part, fill in rest of integer part with zeros
+            res = bin(int(int_part[:bits], 2) + 1)[2:].zfill(bits)
+            if int_len == bits:
+                return res, ''
+            else:
+                res += '0' * (len_bin - bits)
+                return res, ''
+        else:
+            # keep all of integer part and some of fractional part
+            remaining_bits = bits - int_len
+            new_frac = frac_part[:remaining_bits]
+            if remaining_bits < frac_len and '1' in frac_part[remaining_bits:]:
+                # need to round up
+                new_frac = bin(int(new_frac, 2) + 1)[2:].zfill(remaining_bits)
+                if len(new_frac) > remaining_bits:
+                    # carry over to integer part
+                    new_int = bin(int(int_part, 2) + 1)[2:]
+                    return new_int, new_frac[1:]  # drop the leading '1' from fractional part
+            return int_part, new_frac
 
 def round_down_bin(int_part, frac_part, len_bin, bits):
     # round down a signed binary floating point string to a certain number of bits
@@ -144,10 +161,19 @@ def round_down_bin(int_part, frac_part, len_bin, bits):
         # determine how many bits to keep from integer and fractional parts
         int_len = len(int_part)
         frac_len = len(frac_part)
-        # keep all of integer part and some of fractional part
-        remaining_bits = bits - int_len
-        new_frac = frac_part[:remaining_bits]
-        return int_part, new_frac
+        if int_len >= bits:
+            # keep and round down only the integer part, fill in rest of integer part with zeros
+            res = int_part[:bits]
+            if int_len == bits:
+                return res, ''
+            else:
+                res += '0' * (len_bin - bits)
+                return res, ''
+        else:
+            # keep all of integer part and some of fractional part
+            remaining_bits = bits - int_len
+            new_frac = frac_part[:remaining_bits]
+            return int_part, new_frac
 
 def round_to_nearest_bin(int_part, frac_part, len_bin, bits):
     # round to nearest, ties to even for signed binary floating point string
@@ -158,10 +184,45 @@ def round_to_nearest_bin(int_part, frac_part, len_bin, bits):
         int_len = len(int_part)
         frac_len = len(frac_part)
         if int_len >= bits:
-            # odd, round up
-            res = bin(int(int_part[:bits], 2) + 1)[2:].zfill(bits)
+            # keep and round integer part to nearest, fill in rest of integer part with zeros
+            kept = int_part[:bits]
+
+            # if integer bits already match target bits, use discarded fractional bits to decide.
+            if int_len == bits:
+                if not frac_part or '1' not in frac_part:
+                    return kept, ''
+
+                # compare discarded fraction against exactly one-half.
+                if frac_part[0] == '1' and '1' not in frac_part[1:]:
+                    # exactly half: ties-to-even uses kept LSB parity
+                    if int(kept, 2) % 2 == 0:
+                        return kept, ''
+                    return bin(int(kept, 2) + 1)[2:].zfill(bits), ''
+
+                # greater than half: round up
+                if frac_part[0] == '1':
+                    return bin(int(kept, 2) + 1)[2:].zfill(bits), ''
+
+                # less than half: round down
+                return kept, ''
+
+            # For int_len > bits, use first discarded integer bit and sticky bits.
+            first_discarded = int_part[bits]
+            sticky_tail = int_part[bits + 1:] + frac_part
+            if first_discarded == '0':
+                res = kept
+            elif '1' in sticky_tail:
+                res = bin(int(kept, 2) + 1)[2:].zfill(bits)
+            else:
+                # exactly half: ties-to-even
+                if int(kept, 2) % 2 == 0:
+                    res = kept
+                else:
+                    res = bin(int(kept, 2) + 1)[2:].zfill(bits)
+
             res += '0' * (len_bin - bits)
             return res, ''
+
         else:
             # keep all of integer part and some of fractional part
             remaining_bits = bits - int_len
