@@ -298,6 +298,139 @@ def round_binary(bin_str, bits):
 # ============================================================
 # IEEE-754 Arithmetic (GRS Method)
 # ============================================================
+def multiply_mantissas(mant1, mant2):
+
+    value1 = int(mant1, 2)
+    value2 = int(mant2, 2)
+
+    product = value1 * value2
+
+    # Convert back from Q52 fixed-point
+    product >>= 52
+
+    result_bits = format(product, "054b")
+
+    print("len =", len(result_bits))
+    print(result_bits)
+
+    return result_bits
+
+def normalize_product(mantissa, exponent):
+    """
+    Normalize a scaled mantissa after multiplication.
+    """
+
+    value = int(mantissa, 2)
+
+    # Product >= 2.0
+    if value >= (1 << 53):
+        value >>= 1
+        exponent += 1
+
+    # Product < 1.0
+    while value and value < (1 << 52):
+        value <<= 1
+        exponent -= 1
+
+    mantissa = format(value, "053b")
+
+    guard = "0"
+    round_bit = "0"
+    sticky = "0"
+
+    return mantissa, exponent, guard, round_bit, sticky
+
+def ieee_multiply(op1, op2):
+    """
+    Perform IEEE-754 double precision multiplication
+    using the GRS method.
+    """
+
+    binary1 = decimal_to_ieee_binary64(op1)
+    binary2 = decimal_to_ieee_binary64(op2)
+
+    sign1, exp1_bits, mant1, exp1 = extract_ieee_fields(binary1)
+    sign2, exp2_bits, mant2, exp2 = extract_ieee_fields(binary2)
+
+    steps = []
+
+    steps.append("INPUTS")
+    steps.append(f"Operand A = {op1}")
+    steps.append(f"Operand B = {op2}")
+
+    steps.append("")
+    steps.append("IEEE REPRESENTATION")
+    steps.append(binary1)
+    steps.append(binary2)
+
+    result_sign = "0" if sign1 == sign2 else "1"
+    exp = exp1 + exp2
+
+    result_mantissa = multiply_mantissas(
+        mant1,
+        mant2)
+
+    steps.append("")
+    steps.append("MANTISSA MULTIPLICATION")
+
+    steps.append(f"Exponent = {exp}")
+    steps.append(f"Mantissa = {result_mantissa}")
+
+    steps.append(f"Exponent = {exp}")
+    steps.append(f"Mantissa = {result_mantissa}")
+
+    result_mantissa, exp, g, r, s = normalize_product(
+    result_mantissa,
+    exp)
+
+    steps.append("")
+    steps.append("NORMALIZATION")
+    steps.append(f"Exponent = {exp}")
+    steps.append(f"Mantissa = {result_mantissa}")
+
+    result_mantissa, exp = apply_grs_rounding(
+    result_mantissa,
+    exp,
+    g,
+    r,
+    s)
+
+    steps.append("")
+    steps.append("GRS ROUNDING")
+    steps.append(f"Guard  = {g}")
+    steps.append(f"Round  = {r}")
+    steps.append(f"Sticky = {s}")
+    steps.append(f"Rounded Mantissa = {result_mantissa}")
+    steps.append(f"Exponent = {exp}")
+
+    binary_result = assemble_ieee_binary64(
+    result_sign,
+    exp,
+    result_mantissa)
+
+    steps.append("")
+    steps.append("FINAL IEEE-754 BINARY")
+    steps.append(binary_result)
+
+    hex_result = binary64_to_hex(binary_result)
+
+    steps.append("")
+    steps.append("HEXADECIMAL")
+    steps.append(hex_result)
+
+    decimal_result = ieee_binary64_to_decimal(binary_result)
+
+    steps.append("")
+    steps.append("DECIMAL")
+    steps.append(str(decimal_result))
+
+    return (
+        binary_result,
+        hex_result,
+        decimal_result,
+        steps)
+
+
 def add_mantissas(sign1, mant1, sign2, mant2):
     """
     Add or subtract two aligned mantissas depending on their signs.
@@ -339,7 +472,7 @@ def normalize_result(mantissa, exponent):
 
     # Zero result
     if int(mantissa, 2) == 0:
-        return mantissa, exponent
+        return "0", -1023
 
     # Carry after addition
     if len(mantissa) > 53:
@@ -398,6 +531,10 @@ def assemble_ieee_binary64(sign, exponent, mantissa):
 
     mantissa includes the hidden leading 1.
     """
+
+    # Special case: zero
+    if int(mantissa, 2) == 0:
+        return sign + ("0" * 63)
 
     biased = exponent + 1023
 
@@ -687,30 +824,49 @@ def main():
             print("Round-to-nearest, ties-to-even:", round_nearest)
 
     elif choice == '3':
-        fmt1 = input("Operand A format (D=Decimal, H=IEEE Hex): ").upper()
-        op1 = input("Operand A: ")
+        # -----------------------------
+        # Operand A
+        # -----------------------------
+        fmt1 = input("Operand A format (D=Decimal, H=IEEE Hex): ").strip().upper()
 
-        fmt2 = input("Operand B format (D=Decimal, H=IEEE Hex): ").upper()
-        op2 = input("Operand B: ")
+        if fmt1 == "D":
+            op1 = float(input("Operand A: "))
 
-        operation = input("Operation (+ or *): ")
+        elif fmt1 == "H":
+            hex1 = input("Operand A: ").strip()
+            binary = f"{int(hex1,16):064b}"
+            op1 = ieee_binary64_to_decimal(binary)
 
-        if fmt1 == "H":
-            op1 = ieee_binary64_to_decimal(f"{int(op1,16):064b}")
         else:
-            op1 = float(op1)
+            print("Invalid format.")
+            return
 
-        if fmt2 == "H":
-            op2 = ieee_binary64_to_decimal(f"{int(op2,16):064b}")
+
+        # -----------------------------
+        # Operand B
+        # -----------------------------
+        fmt2 = input("Operand B format (D=Decimal, H=IEEE Hex): ").strip().upper()
+
+        if fmt2 == "D":
+            op2 = float(input("Operand B: "))
+
+        elif fmt2 == "H":
+            hex2 = input("Operand B: ").strip()
+            binary = f"{int(hex2,16):064b}"
+            op2 = ieee_binary64_to_decimal(binary)
+
         else:
-            op2 = float(op2)
+            print("Invalid format.")
+            return
+
+
+        operation = input("Operation (+ or *): ").strip()
 
         if operation == "+":
-            binary, hexa, decimal, steps = ieee_add(op1, op2)
+            binary_result, hex_result, decimal_result, steps = ieee_add(op1, op2)
 
         elif operation == "*":
-            print("Multiplication not yet implemented.")
-            return
+            binary_result, hex_result, decimal_result, steps = ieee_multiply(op1, op2)
 
         else:
             print("Invalid operation.")
@@ -724,17 +880,17 @@ def main():
         print("\n========== FINAL ANSWER ==========\n")
 
         print("Binary:")
-        print(binary)
+        print(binary_result)
 
         print()
 
         print("Hexadecimal:")
-        print(hexa)
+        print(hex_result)
 
         print()
 
         print("Decimal:")
-        print(decimal)
+        print(decimal_result)
         
 
 if __name__ == "__main__": # only activates main function if main is executed directly (just incase)
