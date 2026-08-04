@@ -15,9 +15,9 @@ The interface uses a black and white theme with a modern minimal layout. The vis
 
 ## How to Run in Google Colab
 
-Open the Google Colab notebook using the link above. Once the notebook is open, run the setup cell by simply clicking the run button (usually located at the top left).
+Open the Google Colab notebook using the link above. Once the notebook is open, scroll down and find step 2 (for terminal) or step 3 (for GUI), run the setup cell by simply clicking the run button (usually located at the top left).
 
-Once the app launches, Colab will generate a Gradio link that you can open to access the interface.
+Once the app launches, Colab will generate a Gradio link that you can open to access the interface. It is recommended that you click on the live deployment link.
 
 ## Main Features
 
