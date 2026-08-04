@@ -895,7 +895,402 @@ def main():
         print()
 
         print("Decimal:")
-        print(decimal_result)      
+        print(decimal_result)
 
-if __name__ == "__main__": # only activates main function if main is executed directly (just incase)
-        main()
+import gradio as gr
+
+
+def _group_bits(bit_string, group_size=4):
+    return " ".join(
+        bit_string[i:i + group_size]
+        for i in range(0, len(bit_string), group_size)
+    )
+
+
+def _safe_float(value):
+    if value is None:
+        raise ValueError("Please provide a value.")
+    return float(str(value).strip())
+
+
+def _safe_int(value, field_name="value"):
+    if value is None or str(value).strip() == "":
+        raise ValueError(f"Please provide a {field_name}.")
+    return int(str(value).strip())
+
+
+def gradio_convert_decimal_to_ieee(decimal_value):
+    num = _safe_float(decimal_value)
+    binary = decimal_to_ieee_binary64(num)
+    hex_value = binary64_to_hex(binary)
+    return _group_bits(binary, 4), hex_value
+
+
+def gradio_round_decimal(decimal_value, digits):
+    num = _safe_float(decimal_value)
+    digits = _safe_int(digits, "target significant digits")
+    chopped, rounded_up, rounded_down, rounded_to_nearest = round_decimal(num, digits)
+    return (
+        str(chopped),
+        str(rounded_up),
+        str(rounded_down),
+        str(rounded_to_nearest),
+    )
+
+
+def gradio_round_binary(binary_value, bits):
+    binary_value = str(binary_value).strip()
+    bits = _safe_int(bits, "target bits")
+    chopped, rounded_up, rounded_down, rounded_nearest = round_binary(binary_value, bits)
+    return chopped, rounded_up, rounded_down, rounded_nearest
+
+
+def _parse_operand(format_choice, decimal_text, hex_text, operand_name):
+    format_choice = str(format_choice).strip().lower()
+
+    if format_choice == "decimal":
+        value = _safe_float(decimal_text)
+        return value, f"{value}"
+
+    if format_choice in {"ieee hex", "hex"}:
+        hex_value = str(hex_text).strip().replace("0x", "").replace("0X", "")
+        if not hex_value:
+            raise ValueError(f"Please provide {operand_name} in hexadecimal form.")
+        binary = f"{int(hex_value, 16):064b}"
+        value = ieee_binary64_to_decimal(binary)
+        return value, hex_value.upper()
+
+    raise ValueError(f"Invalid format for {operand_name}. Choose Decimal or IEEE Hex.")
+
+
+def gradio_arithmetic(format_a, decimal_a, hex_a, format_b, decimal_b, hex_b, operation):
+    op1, _ = _parse_operand(format_a, decimal_a, hex_a, "Operand A")
+    op2, _ = _parse_operand(format_b, decimal_b, hex_b, "Operand B")
+
+    operation = str(operation).strip()
+
+    if operation == "+":
+        binary_result, hex_result, decimal_result, steps = ieee_add(op1, op2)
+    elif operation == "*":
+        binary_result, hex_result, decimal_result, steps = ieee_multiply(op1, op2)
+    else:
+        raise ValueError("Operation must be + or *.")
+
+    step_text = "\n".join(steps)
+    return binary_result, hex_result, str(decimal_result), step_text
+
+
+def build_gradio_app():
+    css = """
+    /* Modern, Clean & High-Visibility Dark/Monochrome Theme */
+    body, .gradio-container {
+        background-color: #09090b !important;
+        color: #f4f4f5 !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+        max-width: 1280px !important;
+        margin: 0 auto !important;
+        padding: 8px 16px !important;
+    }
+
+    /* Container & Panel Styling */
+    .block, .panel, .gr-box, .gr-form, .gr-group {
+        background-color: #121215 !important;
+        border: 1px solid #27272a !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
+        margin-bottom: 6px !important;
+    }
+
+    /* Header & Section Labels */
+    .header-text {
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    .header-text h1 {
+        font-size: 1.25rem !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.02em !important;
+        color: #ffffff !important;
+        margin: 0 !important;
+    }
+    .header-text p {
+        font-size: 0.8rem !important;
+        color: #a1a1aa !important;
+        margin-top: 2px !important;
+    }
+
+    /* Input & Textarea Elements */
+    input, textarea, select {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+        border: 1px solid #3f3f46 !important;
+        border-radius: 6px !important;
+        font-family: "JetBrains Mono", "Fira Code", Monaco, monospace !important;
+        font-size: 0.85rem !important;
+        padding: 6px 10px !important;
+    }
+    input:focus, textarea:focus {
+        border-color: #ffffff !important;
+        box-shadow: 0 0 0 1px #ffffff !important;
+        outline: none !important;
+    }
+
+    /* Form Labels */
+    label span, .gr-form > label span {
+        color: #d4d4d8 !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.04em !important;
+        margin-bottom: 2px !important;
+    }
+
+    /* Clean Buttons */
+    button.primary-btn, .gr-button-primary {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 1px solid #ffffff !important;
+        border-radius: 6px !important;
+        font-weight: 700 !important;
+        font-size: 0.8rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        padding: 8px 16px !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+    }
+    button.primary-btn:hover, .gr-button-primary:hover {
+        background-color: #e4e4e7 !important;
+        border-color: #e4e4e7 !important;
+    }
+
+    /* Radio Inputs */
+    .gr-radio label {
+        background-color: #18181b !important;
+        color: #a1a1aa !important;
+        border: 1px solid #27272a !important;
+        border-radius: 4px !important;
+        padding: 4px 10px !important;
+        font-size: 0.75rem !important;
+    }
+    .gr-radio label.selected {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+    }
+
+    /* Navigation Tabs */
+    .tab-nav {
+        border-bottom: 1px solid #27272a !important;
+        margin-bottom: 10px !important;
+    }
+    .tab-nav button {
+        background: transparent !important;
+        color: #a1a1aa !important;
+        border: none !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        padding: 6px 16px !important;
+    }
+    .tab-nav button.selected {
+        color: #ffffff !important;
+        border-bottom: 2px solid #ffffff !important;
+    }
+
+    /* Section Headers inside Cards */
+    .section-title {
+        font-size: 0.8rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        color: #ffffff !important;
+        margin-bottom: 6px !important;
+        border-bottom: 1px solid #27272a;
+        padding-bottom: 4px;
+    }
+
+    /* Layout Spacing Fixes */
+    .gap, .gr-gap { gap: 8px !important; }
+    textarea { resize: none !important; }
+    """
+
+    theme = gr.themes.Monochrome(
+        primary_hue="neutral",
+        neutral_hue="neutral",
+        radius_size="sm",
+    )
+
+    with gr.Blocks(theme=theme, css=css, title="IEEE 754 Binary64 Machine") as demo:
+        with gr.Column(elem_classes=["header-text"]):
+            gr.Markdown("# IEEE 754 BINARY64")
+            gr.Markdown("High-precision floating-point conversion, rounding, and arithmetic")
+
+        with gr.Tabs():
+            # TAB 1: Decimal → IEEE 754
+            with gr.Tab("1. Decimal → IEEE 754"):
+                with gr.Row():
+                    with gr.Column(scale=1):
+                        gr.Markdown("<div class='section-title'>Input Value</div>")
+                        decimal_input = gr.Textbox(
+                            label="Decimal Number",
+                            placeholder="e.g. 12.75",
+                            lines=1
+                        )
+                        convert_btn = gr.Button("Convert to IEEE 754", variant="primary", elem_classes=["primary-btn"])
+
+                    with gr.Column(scale=2):
+                        gr.Markdown("<div class='section-title'>Binary64 & Hex Representation</div>")
+                        binary_output = gr.Textbox(
+                            label="64-Bit Binary (4-Bit Grouped)",
+                            lines=2,
+                            interactive=False
+                        )
+                        hex_output = gr.Textbox(
+                            label="Hexadecimal Output",
+                            lines=1,
+                            interactive=False
+                        )
+
+                convert_btn.click(
+                    fn=gradio_convert_decimal_to_ieee,
+                    inputs=[decimal_input],
+                    outputs=[binary_output, hex_output],
+                )
+
+            # TAB 2: Rounding Methods
+            with gr.Tab("2. Rounding Methods"):
+                with gr.Row():
+                    # Left Column: Decimal Input
+                    with gr.Column(scale=1):
+                        gr.Markdown("<div class='section-title'>Decimal Rounding</div>")
+                        with gr.Row():
+                            decimal_round_input = gr.Textbox(
+                                label="Decimal Value",
+                                placeholder="123.456",
+                                lines=1
+                            )
+                            decimal_digits_input = gr.Number(
+                                label="Sig. Digits",
+                                precision=0,
+                                value=3
+                            )
+                        decimal_round_btn = gr.Button("Round Decimal", variant="primary", elem_classes=["primary-btn"])
+
+                        with gr.Row():
+                            decimal_chop_output = gr.Textbox(label="Chopping", lines=1, interactive=False)
+                            decimal_up_output = gr.Textbox(label="Round Up", lines=1, interactive=False)
+                        with gr.Row():
+                            decimal_down_output = gr.Textbox(label="Round Down", lines=1, interactive=False)
+                            decimal_nearest_output = gr.Textbox(label="Nearest (Ties Even)", lines=1, interactive=False)
+
+                    # Right Column: Binary Input
+                    with gr.Column(scale=1):
+                        gr.Markdown("<div class='section-title'>Signed Binary Rounding</div>")
+                        with gr.Row():
+                            binary_round_input = gr.Textbox(
+                                label="Binary String",
+                                placeholder="-110.101",
+                                lines=1
+                            )
+                            binary_bits_input = gr.Number(
+                                label="Target Bits",
+                                precision=0,
+                                value=5
+                            )
+                        binary_round_btn = gr.Button("Round Binary", variant="primary", elem_classes=["primary-btn"])
+
+                        with gr.Row():
+                            binary_chop_output = gr.Textbox(label="Chopping", lines=1, interactive=False)
+                            binary_up_output = gr.Textbox(label="Round Up", lines=1, interactive=False)
+                        with gr.Row():
+                            binary_down_output = gr.Textbox(label="Round Down", lines=1, interactive=False)
+                            binary_nearest_output = gr.Textbox(label="Nearest (Ties Even)", lines=1, interactive=False)
+
+                decimal_round_btn.click(
+                    fn=gradio_round_decimal,
+                    inputs=[decimal_round_input, decimal_digits_input],
+                    outputs=[
+                        decimal_chop_output,
+                        decimal_up_output,
+                        decimal_down_output,
+                        decimal_nearest_output,
+                    ],
+                )
+
+                binary_round_btn.click(
+                    fn=gradio_round_binary,
+                    inputs=[binary_round_input, binary_bits_input],
+                    outputs=[
+                        binary_chop_output,
+                        binary_up_output,
+                        binary_down_output,
+                        binary_nearest_output,
+                    ],
+                )
+
+            # TAB 3: Arithmetic (GRS Method)
+            with gr.Tab("3. Arithmetic (GRS Method)"):
+                with gr.Row():
+                    # Left: Operands & Operation
+                    with gr.Column(scale=1):
+                        gr.Markdown("<div class='section-title'>Inputs & Configuration</div>")
+
+                        # Operand A
+                        with gr.Row():
+                            format_a = gr.Radio(choices=["Decimal", "IEEE Hex"], value="Decimal", label="Op A Format")
+                            decimal_a = gr.Textbox(label="Op A Decimal", placeholder="12.5", lines=1)
+                            hex_a = gr.Textbox(label="Op A Hex", placeholder="402800...", lines=1)
+
+                        # Operand B
+                        with gr.Row():
+                            format_b = gr.Radio(choices=["Decimal", "IEEE Hex"], value="Decimal", label="Op B Format")
+                            decimal_b = gr.Textbox(label="Op B Decimal", placeholder="3.25", lines=1)
+                            hex_b = gr.Textbox(label="Op B Hex", placeholder="400A00...", lines=1)
+
+                        operation = gr.Radio(choices=["+", "*"], value="+", label="Operation")
+                        arithmetic_btn = gr.Button("Execute Operation", variant="primary", elem_classes=["primary-btn"])
+
+                    # Right: Results & Step Trace
+                    with gr.Column(scale=1):
+                        gr.Markdown("<div class='section-title'>Results & Computation Trace</div>")
+
+                        with gr.Row():
+                            arithmetic_hex_output = gr.Textbox(label="Hex Result", lines=1, interactive=False)
+                            arithmetic_decimal_output = gr.Textbox(label="Decimal Result", lines=1, interactive=False)
+
+                        arithmetic_binary_output = gr.Textbox(label="Binary64 Result", lines=1, interactive=False)
+                        arithmetic_steps_output = gr.Textbox(
+                            label="Step-by-Step Solution Trace",
+                            lines=7,
+                            max_lines=7,
+                            interactive=False
+                        )
+
+                arithmetic_btn.click(
+                    fn=gradio_arithmetic,
+                    inputs=[
+                        format_a,
+                        decimal_a,
+                        hex_a,
+                        format_b,
+                        decimal_b,
+                        hex_b,
+                        operation,
+                    ],
+                    outputs=[
+                        arithmetic_binary_output,
+                        arithmetic_hex_output,
+                        arithmetic_decimal_output,
+                        arithmetic_steps_output,
+                    ],
+                )
+
+    return demo
+
+def launch_gradio():
+    demo = build_gradio_app()
+    demo.queue()
+    demo.launch(share=True, debug=False)
+
+if __name__ == "__main__":
+    launch_gradio()
