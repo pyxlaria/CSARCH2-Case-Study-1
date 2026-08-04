@@ -897,3 +897,5 @@ def main():
         print("Decimal:")
         print(decimal_result)
         
+if __name__ == "__main__": # only activates main function if main is executed directly (just incase)
+    main()
