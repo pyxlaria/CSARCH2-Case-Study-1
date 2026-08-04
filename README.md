@@ -1,7 +1,7 @@
 # CSARCH2-Case-Study-1
 This project is a web-based IEEE 754 calculator designed to run in Google Colab with Gradio as the graphical user interface.
 
-Click this Google Colab link to proceed:
+Click this Google Colab link to proceed: https://colab.research.google.com/drive/1GFIvbTctJZK2SGuFbsU7FereZPWzCnd4?usp=sharing
 
 The application covers three main functions. First, it converts a decimal input into IEEE 754 binary64 form and displays the result in grouped binary and hexadecimal output. Second, it demonstrates rounding for both decimal and binary inputs using chopping, round-up, round-down, and round-to-nearest, ties-to-even. Third, it performs IEEE 754 binary64 arithmetic using the GRS method for addition and multiplication, then presents the final binary, hexadecimal, decimal, and step-by-step solution.
 
