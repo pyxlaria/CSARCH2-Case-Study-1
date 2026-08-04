@@ -895,7 +895,8 @@ def main():
         print()
 
         print("Decimal:")
-        print(decimal_result)
+        print("Binary:")
+        print(" ".join(binary_result[i:i+4] for i in range(0, len(binary_result), 4)))        
 
-if __name__ == "__main__": # only activates main function if main is executed directly (just incase)
-    main()        
+    if __name__ == "__main__": # only activates main function if main is executed directly (just incase)
+        main()
