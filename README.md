@@ -1,5 +1,5 @@
 # CSARCH2-Case-Study-1
-This project is a web-based IEEE 754 calculator designed to run in Google Colab with Gradio as the graphical user interface. The layout is intentionally monochrome, minimal, and focused on readability so that the outputs are easy to inspect during demonstrations and testing.
+This project is a web-based IEEE 754 calculator designed to run in Google Colab with Gradio as the graphical user interface.
 
 Click this Google Colab link to proceed:
 
