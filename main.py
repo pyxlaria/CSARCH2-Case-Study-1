@@ -885,7 +885,7 @@ def main():
         print("\n========== FINAL ANSWER ==========\n")
 
         print("Binary:")
-        print(binary_result)
+        print(" ".join(binary_result[i:i+4] for i in range(0, len(binary_result), 4)))
 
         print()
 
@@ -895,8 +895,7 @@ def main():
         print()
 
         print("Decimal:")
-        print("Binary:")
-        print(" ".join(binary_result[i:i+4] for i in range(0, len(binary_result), 4)))        
+        print(decimal_result)      
 
     if __name__ == "__main__": # only activates main function if main is executed directly (just incase)
         main()
