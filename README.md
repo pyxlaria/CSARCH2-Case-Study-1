@@ -40,3 +40,7 @@ For arithmetic using the GRS method, a sample addition input is Operand A = 12.5
 ## Project Structure
 
 The main application file is main.py. The project README is this file, and the screenshots used for testing should be stored in a screenshots/ folder.
+
+## Video Walkthrough
+
+Link: https://youtu.be/fI_BwuEW-bE
