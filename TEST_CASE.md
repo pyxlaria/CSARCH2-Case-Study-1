@@ -365,7 +365,8 @@ Round-to-nearest(TE): 9.99
 
 **Screenshot:**
 
-<img width="441" height="491" alt="image" src="https://github.com/user-attachments/assets/3e919f3c-4d28-48c9-9b5d-510ef253c5d3" />
+<img width="430" height="493" alt="image" src="https://github.com/user-attachments/assets/21936c1c-141f-49ce-a9e5-20c697e2815f" />
+
 
 
 ---
@@ -425,7 +426,8 @@ Round-to-nearest(TE): -110.1
 
 **Screenshot:**
 
-<img width="434" height="493" alt="image" src="https://github.com/user-attachments/assets/e4388339-4f17-406e-b845-09dd3fd318b3" />
+<img width="431" height="488" alt="image" src="https://github.com/user-attachments/assets/e91767f4-150b-4edf-848d-c244a14f727e" />
+
 
 
 ---
@@ -452,7 +454,8 @@ Round-to-nearest(TE): 10
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="427" height="499" alt="image" src="https://github.com/user-attachments/assets/ebd9c897-3ce0-4ffb-abc5-59560967a874" />
+
 
 ---
 
@@ -478,7 +481,8 @@ Round-to-nearest(TE): 101.1
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="436" height="495" alt="image" src="https://github.com/user-attachments/assets/1baebf7c-0b15-460d-9297-bc191e2d7d62" />
+
 
 ---
 
@@ -506,7 +510,8 @@ Round-to-nearest(TE): +11
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="438" height="492" alt="image" src="https://github.com/user-attachments/assets/c5afff77-7b8d-47a5-a061-99f0e864bf40" />
+
 
 ---
 
@@ -538,7 +543,8 @@ Decimal: 15.75
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="1140" height="525" alt="image" src="https://github.com/user-attachments/assets/1178733d-c79f-4d99-b6a9-587de7ed94c2" />
+
 
 ---
 
@@ -564,7 +570,8 @@ Decimal: 0.3
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="1138" height="519" alt="image" src="https://github.com/user-attachments/assets/8dcac19b-2774-4475-b39b-524021216fdf" />
+
 
 ---
 
@@ -588,7 +595,8 @@ Decimal: 0.0
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="1153" height="513" alt="image" src="https://github.com/user-attachments/assets/3f4ec294-bb05-474b-911d-a2231eb65a04" />
+
 
 ---
 
@@ -612,7 +620,8 @@ Decimal: 10.0
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="1140" height="521" alt="image" src="https://github.com/user-attachments/assets/ec96b6ee-12b4-4821-991e-e39a3bf052ab" />
+
 
 ---
 
@@ -636,7 +645,8 @@ Decimal: -6.0
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="1132" height="512" alt="image" src="https://github.com/user-attachments/assets/883c2ff6-4b12-4630-bcd7-3009af77ce2c" />
+
 
 ---
 
@@ -660,7 +670,8 @@ Decimal: 25.75
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="1157" height="522" alt="image" src="https://github.com/user-attachments/assets/362849f3-d88b-4070-8dc4-f183b42a5a6d" />
+
 
 ---
 
@@ -684,7 +695,8 @@ Decimal: 8.125
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="1115" height="523" alt="image" src="https://github.com/user-attachments/assets/8be37da6-a5e4-4ab8-acd5-0023b5b88993" />
+
 
 ---
 
