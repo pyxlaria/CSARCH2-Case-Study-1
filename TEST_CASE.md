@@ -9,9 +9,6 @@ This document captures test cases for **Machine 3**, covering all three required
 
 Each test case lists the **Input**, the **Expected Output** (the mathematically/IEEE-754-correct result), the **Actual Output** (what the program produced when run), a **Pass/Fail** verdict, and a placeholder for a screenshot of the program run.
 
-> **Legend:** ✅ PASS = actual output matches expected output exactly. ❌ FAIL = a discrepancy was found (see the accompanying note for root cause).
-
----
 
 ## 1. Decimal → IEEE 754 Double-Precision Conversion
 
@@ -32,7 +29,7 @@ Hex:    4029800000000000
 Binary: 0100 0000 0010 1001 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 Hex:    4029800000000000
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -54,7 +51,7 @@ Hex:    BFB999999999999A
 Binary: 1011 1111 1011 1001 1001 1001 1001 1001 1001 1001 1001 1001 1001 1001 1001 1010
 Hex:    BFB999999999999A
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -76,7 +73,7 @@ Hex:    0000000000000000
 Binary: 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 Hex:    0000000000000000
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -98,7 +95,7 @@ Hex:    8000000000000000
 Binary: 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 Hex:    8000000000000000
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -120,7 +117,7 @@ Hex:    0000000000000001
 Binary: 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0001
 Hex:    0000000000000001
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -142,7 +139,7 @@ Hex:    7FEFFFFFFFFFFFFF
 Binary: 0111 1111 1110 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111
 Hex:    7FEFFFFFFFFFFFFF
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -164,7 +161,7 @@ Hex:    7FF0000000000000
 Binary: 0111 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 Hex:    7FF0000000000000
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -186,7 +183,7 @@ Hex:    FFF0000000000000
 Binary: 1111 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 Hex:    FFF0000000000000
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -208,7 +205,7 @@ Hex:    7FF8000000000000
 Binary: 0111 1111 1111 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
 Hex:    7FF8000000000000
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -242,7 +239,7 @@ Round-up:            124.0
 Round-down:          123.0
 Round-to-nearest(TE): 123.0
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -268,7 +265,7 @@ Round-up:            -45.67
 Round-down:          -45.68
 Round-to-nearest(TE): -45.68
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -294,7 +291,7 @@ Round-up:            0
 Round-down:          0
 Round-to-nearest(TE): 0
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -322,7 +319,7 @@ Round-to-nearest(TE): 0.12
 ```
 **Note:** 0.125 rounded to 2 significant digits ties exactly between 0.12 and 0.13; ties-to-even keeps the even digit 2 → 0.12.
 
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -350,7 +347,7 @@ Round-to-nearest(TE): 9.99
 ```
 **Note:** 9.995 cannot be represented exactly in binary floating point; it is actually stored as 9.99499999999999921840…, so chopping/round-down/nearest correctly give 9.99 while round-up (ceiling) correctly jumps to 10.0.
 
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -382,7 +379,7 @@ Round-up:            1010.1
 Round-down:          1010.0
 Round-to-nearest(TE): 1010.1
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -408,7 +405,7 @@ Round-up:            -110.1
 Round-down:          -111.0
 Round-to-nearest(TE): -110.1
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -434,7 +431,7 @@ Round-up:            10
 Round-down:          1
 Round-to-nearest(TE): 10
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -460,7 +457,7 @@ Round-up:            101.1
 Round-down:          101.1
 Round-to-nearest(TE): 101.1
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -488,7 +485,7 @@ Round-to-nearest(TE): +11
 ```
 **Note:** round_binary() does not strip a leading '+' sign the way it strips '-'. The '+' character is left attached to the integer part, which throws off the integer-part bit count and produces incorrect, sign-corrupted results ('100' instead of '11.1', etc.). Expected output above is what the unsigned equivalent ('11.01', bits=3) correctly produces. Note the CLI's own input validator (`main()`, choice 2) does not even allow '+' as a character, so this bug is only reachable through the Gradio UI / direct function calls, not the console menu.
 
-**Result:** ❌ FAIL
+**Result:** FAIL
 
 **Screenshot:**
 
@@ -520,7 +517,7 @@ Binary:  0100 0000 0010 1111 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0
 Hex:     402F800000000000
 Decimal: 15.75
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -546,7 +543,7 @@ Decimal: 0.3
 ```
 **Note:** Correct IEEE-754 double addition of 0.1 + 0.2 rounds to 0x3FD3333333333334 (0.30000000000000004), which is what Python's native '+' operator and struct-based conversion both produce. The program's GRS implementation instead returns 0x3FD3333333333333 (0.3) — off by 1 ULP. This points to a bug in the guard/round/sticky bit bookkeeping during exponent alignment (align_exponents) for this case.
 
-**Result:** ❌ FAIL
+**Result:** FAIL
 
 **Screenshot:**
 
@@ -570,7 +567,7 @@ Binary:  0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0
 Hex:     0000000000000000
 Decimal: 0.0
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -594,7 +591,7 @@ Binary:  0100 0000 0010 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0
 Hex:     4024000000000000
 Decimal: 10.0
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -618,7 +615,7 @@ Binary:  1100 0000 0001 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0
 Hex:     C018000000000000
 Decimal: -6.0
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -642,7 +639,7 @@ Binary:  0100 0000 0011 1001 1100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0
 Hex:     4039C00000000000
 Decimal: 25.75
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
@@ -666,7 +663,7 @@ Binary:  0100 0000 0010 0000 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0
 Hex:     4020400000000000
 Decimal: 8.125
 ```
-**Result:** ✅ PASS
+**Result:** PASS
 
 **Screenshot:**
 
