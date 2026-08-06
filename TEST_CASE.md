@@ -7,7 +7,7 @@ This document captures test cases for **Machine 3**, covering all three required
 2. Rounding methods (chopping, round-up, round-down, round-to-nearest ties-to-even) for both decimal and signed binary input
 3. IEEE-754 arithmetic (addition and multiplication) using the Guard-Round-Sticky (GRS) method
 
-Each test case lists the **Input**, the **Expected Output** (the mathematically/IEEE-754-correct result), the **Actual Output** (what the program produced when run), a **Pass/Fail** verdict, and a placeholder for a screenshot of the program run.
+Each test case lists the **Input**, the **Expected Output** (the mathematically/IEEE-754-correct result), the **Actual Output** (what the program produced when run), a **Pass/Fail** verdict, and a screenshot of the program run.
 
 
 ## 1. Decimal → IEEE 754 Double-Precision Conversion
