@@ -33,7 +33,9 @@ Hex:    4029800000000000
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="529" height="467" alt="image" src="https://github.com/user-attachments/assets/e5955ec3-0a81-4e84-9177-7972986c61be" />
+
+
 
 ---
 
@@ -55,7 +57,8 @@ Hex:    BFB999999999999A
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="516" height="459" alt="image" src="https://github.com/user-attachments/assets/fc44ccd7-8ac3-4540-b6e6-0cf2ba294f3c" />
+
 
 ---
 
@@ -77,7 +80,8 @@ Hex:    0000000000000000
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="534" height="469" alt="image" src="https://github.com/user-attachments/assets/fb0c4fd3-57a7-4705-9377-92b90e3c2580" />
+
 
 ---
 
@@ -99,7 +103,8 @@ Hex:    8000000000000000
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="513" height="461" alt="image" src="https://github.com/user-attachments/assets/8216adf3-a054-47ed-b186-e5b6cd1ca836" />
+
 
 ---
 
@@ -121,7 +126,8 @@ Hex:    0000000000000001
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="522" height="462" alt="image" src="https://github.com/user-attachments/assets/4bb1624f-44f5-48a3-a36a-bae42d341959" />
+
 
 ---
 
@@ -143,7 +149,8 @@ Hex:    7FEFFFFFFFFFFFFF
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="530" height="469" alt="image" src="https://github.com/user-attachments/assets/710012b2-d3ac-4e11-baad-77657206f247" />
+
 
 ---
 
@@ -165,7 +172,8 @@ Hex:    7FF0000000000000
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="525" height="466" alt="image" src="https://github.com/user-attachments/assets/86fc5aac-66be-449e-b1be-1ec66e0548ee" />
+
 
 ---
 
@@ -187,7 +195,8 @@ Hex:    FFF0000000000000
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="530" height="469" alt="image" src="https://github.com/user-attachments/assets/efe5d7be-cadd-4b01-8da9-e9f5da5ae3f0" />
+
 
 ---
 
