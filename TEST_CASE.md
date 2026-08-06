@@ -218,7 +218,8 @@ Hex:    7FF8000000000000
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="523" height="463" alt="image" src="https://github.com/user-attachments/assets/37887f6a-7709-44ca-b71f-5f629a4d80b3" />
+
 
 ---
 
@@ -252,7 +253,8 @@ Round-to-nearest(TE): 123.0
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="455" height="490" alt="image" src="https://github.com/user-attachments/assets/5c417769-c29c-44c0-aadc-e93df7d13864" />
+
 
 ---
 
@@ -278,7 +280,8 @@ Round-to-nearest(TE): -45.68
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="441" height="494" alt="image" src="https://github.com/user-attachments/assets/b16f26e8-dcbd-4b30-869c-836b63cc676d" />
+
 
 ---
 
@@ -304,7 +307,8 @@ Round-to-nearest(TE): 0
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="443" height="492" alt="image" src="https://github.com/user-attachments/assets/7c91ecbb-0a4e-4238-ae68-15c6ccd79559" />
+
 
 ---
 
@@ -332,7 +336,8 @@ Round-to-nearest(TE): 0.12
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="442" height="491" alt="image" src="https://github.com/user-attachments/assets/c1c818cb-891f-4e47-b524-a7765ddf169a" />
+
 
 ---
 
@@ -360,7 +365,8 @@ Round-to-nearest(TE): 9.99
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="441" height="491" alt="image" src="https://github.com/user-attachments/assets/3e919f3c-4d28-48c9-9b5d-510ef253c5d3" />
+
 
 ---
 
@@ -392,7 +398,8 @@ Round-to-nearest(TE): 1010.1
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="441" height="491" alt="image" src="https://github.com/user-attachments/assets/fea42407-c7fd-430c-9964-3b4de9605085" />
+
 
 ---
 
@@ -418,7 +425,8 @@ Round-to-nearest(TE): -110.1
 
 **Screenshot:**
 
-`[Insert screenshot here]`
+<img width="434" height="493" alt="image" src="https://github.com/user-attachments/assets/e4388339-4f17-406e-b845-09dd3fd318b3" />
+
 
 ---
 
